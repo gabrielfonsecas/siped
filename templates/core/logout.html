@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="pt-BR">
+<head>
+    {% include 'core/partials/head.html' %}
+    <title>LOGOUT</title>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+  <section class="hero is-primary is-fullheight">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+                    <div class="box">
+                        <div class="field">
+                            <h2>Você saiu com sucesso!</h2>
+                            <p>Esperamos te ver novamente em breve.</p>
+                            <br>
+                            <a class="button is-success" href="{% url 'index.html' %}">
+                                Entrar novamente
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>
+</body>
+</html>

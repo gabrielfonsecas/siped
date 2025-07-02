@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="pt-BR">
+<head>
+    {% include 'core/partials/head.html' %}
+    <title>Visualização de Paciente</title>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                {% if not paciente %}
+                    <div class="columns">
+                        <div class="column">
+                            <div class="card" id="buscar-paciente-card">
+                                <header class="card-header">
+                                    <p class="card-header-title is-centered">Buscar Paciente</p>
+                                </header>
+                                <div class="card-content">
+                                    <div class="content">
+                                        <form id="buscar-paciente-form" onsubmit="redirecionar(event)">
+                                            {% csrf_token %}
+                                            <div class="field">
+                                                <label class="label">Nome do Paciente:</label>
+                                                <div class="control">
+                                                    <select class="js-example-basic-single" id="id_paciente" name="id_paciente" style="width: 100%;">
+                                                        <option value="" disabled selected>Selecione o paciente</option>
+                                                        {% for paciente in pacientes %}
+                                                            <option value="{{ paciente.id_paciente }}">{{ paciente.nome|title }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="buttons is-right">
+                                                <input class="button is-primary is-rounded" type="submit" value="Ver Informações">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% if paciente %}
+                <div class="columns">
+                    <div class="column">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title is-centered">Paciente</p>
+                            </header>
+
+                            <div class="card-content custom-offset">
+                                <div class="content">
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Nome do Paciente:</label>
+                                        <span style="font-weight: normal;">{{ paciente.nome|title }}</span>
+                                    </div>
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Data de Nascimento:</label>
+                                        <span style="font-weight: normal;">{{ paciente.data_nascimento }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Idade:</label>
+                                        <span id="idade" style="font-weight: normal;"></span>
+                                    </div>
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Sexo:</label>
+                                        <span style="font-weight: normal;">{{ paciente.sexo|title }}</span>
+                                    </div>
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Tipo Sanguíneo:</label>
+                                        <span style="font-weight: normal;">{{ paciente.tipo_sanguineo|upper }}</span>
+                                    </div>
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">CPF:</label>
+                                        <span style="font-weight: normal;">{{ paciente.cpf }}</span>
+                                    </div>
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">RG:</label>
+                                        <span style="font-weight: normal;">{{ paciente.rg }}</span>
+                                    </div>
+                                    
+
+                                    <p class="card-header-title is-centered no-offset">Responsável</p><!-- chumbado para funcionar -->
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Nome do Responsável:</label>
+                                        <span style="font-weight: normal;">{{ paciente.responsavel|title }}</span>
+                                    </div>
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">CPF do Responsável:</label>
+                                        <span style="font-weight: normal;">{{ paciente.cpf_responsavel }}</span>
+                                    </div>
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">RG do Responsável:</label>
+                                        <span style="font-weight: normal;">{{ paciente.rg_responsavel }}</span>
+                                    </div>
+                                    
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Telefone:</label>
+                                        <span style="font-weight: normal;">{{ paciente.telefone }}</span>
+                                    </div>
+                                    
+                                    <div class="field">
+                                        <label class="label" style="font-weight: bold;">Endereço:</label>
+                                        <span style="font-weight: normal;">{{ paciente.endereco|upper }}</span>
+                                    </div>   
+                                    
+                                    <div class="field is-grouped" style="justify-content: flex-end;">
+                                        <div class="buttons is-right">
+                                            <a href="{% url 'editarPaciente' paciente.id_paciente %}" class="button is-warning">Editar</a>
+                                            <a href="{% url 'excluirPaciente' paciente.id_paciente %}" class="button is-danger">Excluir</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if messages %}
+  {% for message in messages %}
+    <div class="notification {{ message.tags }}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+    </section>
+
+    <!-- jQuery (necessário para o Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2({
+                placeholder: "Digite para buscar o paciente", // Texto do placeholder
+                allowClear: true,
+                width: 'resolve',
+                language: {
+                    noResults: function() {
+                        return "Nenhum paciente encontrado";
+                    }
+                }
+            });
+        });
+
+        function redirecionar(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+            const select = document.getElementById('id_paciente');
+            const idPaciente = select.value; // Obtém o ID do paciente selecionado
+            if (idPaciente) {
+                window.location.href = `/paciente/${idPaciente}/`; // Redireciona para a URL com o ID
+            } else {
+                alert('Por favor, selecione um paciente.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const dataNascimento = "{{ paciente.data_nascimento|date:'Y-m-d' }}"; // Formata a data para o formato ISO
+            const idadeSpan = document.getElementById('idade'); // Elemento onde a idade será exibida
+    
+            if (dataNascimento) {
+                const hoje = new Date(); // Data atual
+                const nascimento = new Date(dataNascimento); // Converte a data de nascimento para um objeto Date
+    
+                let anos = hoje.getFullYear() - nascimento.getFullYear(); // Calcula a diferença de anos
+                let meses = hoje.getMonth() - nascimento.getMonth(); // Calcula a diferença de meses
+                let dias = hoje.getDate() - nascimento.getDate(); // Calcula a diferença de dias
+    
+                // Ajusta os valores se o mês ou o dia ainda não tiverem ocorrido este ano
+                if (meses < 0 || (meses === 0 && dias < 0)) {
+                    anos--;
+                    meses += 12;
+                }
+    
+                if (dias < 0) {
+                    const ultimoDiaMesAnterior = new Date(
+                        hoje.getFullYear(),
+                        hoje.getMonth(),
+                        0
+                    ).getDate(); // Último dia do mês anterior
+                    dias += ultimoDiaMesAnterior;
+                    meses--;
+                }
+    
+                // Exibe a idade no campo
+                idadeSpan.textContent = `${anos} anos ${meses} meses ${dias} dias`;
+            } else {
+                idadeSpan.textContent = "Data de nascimento não disponível";
+            }
+        });
+    </script>
+</body>
+</html>

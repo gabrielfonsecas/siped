@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'core/partials/head.html' %}
+    <title>Menu</title>
+</head>
+<body>
+    {% load static %}
+    {% include 'core/partials/header.html' %}
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <!-- Grid para os cards -->
+                <div class="columns is-centered">
+                    <div class="column is-5-tablet is-4-desktop is-3-widescreen has-text-centered">
+                      <figure class="imageIndex">
+                        <img src="{% static 'imagem/logo.png' %}" alt="Logo">
+                      </figure>
+                    </div>
+                </div>
+                <div class="columns is-centered is-multiline">
+                    <!-- Card: Cadastrar Paciente -->
+                    <div class="column is-3">
+                        <a href="{% url 'cadastroPaciente' %}" class="menu-card card">
+                            <div class="card-content has-text-centered">
+                                <span class="icon menu-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </span>
+                                <h2 class="title is-4">Cadastrar Paciente</h2>
+                                <p class="subtitle is-6">Adicione novos pacientes.</p>
+                            </div>
+                        </a>
+                    </div>
+  
+                    <!-- Card: Nova Consulta -->
+                    <div class="column is-3">
+                        <a href="{% url 'nova_consulta_listar_pacientes' %}" class="menu-card card">
+                            <div class="card-content has-text-centered">
+                                <span class="icon menu-icon">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </span>
+                                <h2 class="title is-4">Cadastrar Consulta</h2>
+                                <p class="subtitle is-6">Crie uma nova consulta.</p>
+                            </div>
+                        </a>
+                    </div>
+  
+                    <!-- Card: Consultas -->
+                    <div class="column is-3">
+                        <a href="{% url 'listar_consultas' %}" class="menu-card card">
+                            <div class="card-content has-text-centered">
+                                <span class="icon menu-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                                <h2 class="title is-4">Consultas</h2>
+                                <p class="subtitle is-6">Visualize e gerencie consultas.</p>
+                            </div>
+                        </a>
+                    </div>
+  
+                    <!-- Card: Pacientes -->
+                    <div class="column is-3">
+                        <a href="{% url 'paciente' %}" class="menu-card card">
+                            <div class="card-content has-text-centered">
+                                <span class="icon menu-icon">
+                                    <i class="fas fa-users"></i>
+                                </span>
+                                <h2 class="title is-4">Pacientes</h2>
+                                <p class="subtitle is-6">Visualize e gerencie pacientes.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

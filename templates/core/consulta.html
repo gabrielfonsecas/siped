@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="pt-BR">
+<head>
+    {% include 'core/partials/head.html' %}
+    <title>Visualização de Consulta</title>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                {% if consulta %}
+                <div class="columns">
+                    <div class="column">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title is-centered">Consulta</p>
+                            </header>
+
+                            <div class="card-content custom-offset">
+                                <div class="content">
+                                    <!-- Informações do Paciente -->
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Nome do Paciente:</label>
+                                        <span style="font-weight: normal;">{{ consulta.nome |title}}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Idade:</label>
+                                        <span style="font-weight: normal;">{{ consulta.idade }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Idade Corrigida:</label>
+                                        <span style="font-weight: normal;">{{ consulta.idadeCorrigida }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Data da Consulta:</label>
+                                        <span style="font-weight: normal;">{{ consulta.dataConsulta }}</span>
+                                    </div>
+
+                                    <!-- Histórico do Paciente -->
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Comorbidade:</label>
+                                        <span style="font-weight: normal;">{{ consulta.especificacaoDoencaPrevia|upper }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Medicamentos:</label>
+                                        <span style="font-weight: normal;">{{ consulta.especificacaoMedicamentoUso|upper }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Histórico Gestacional:</label>
+                                        <span style="font-weight: normal;">{{ consulta.historicoGestacional }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Anamnese:</label>
+                                        <span style="font-weight: normal; text-align: justify;">{{ consulta.anamnese }}</span>
+                                    </div>
+                                    <!-- Dados Objetivos -->
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Peso:</label>
+                                        <span style="font-weight: normal;">{{ consulta.peso }} kg</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Altura:</label>
+                                        <span id="estatura" style="font-weight: normal;">{{ consulta.estatura }} cm</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">IMC:</label>
+                                        <span style="font-weight: normal;">{{ consulta.imc }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Perímetro Encefálico:</label>
+                                        <span style="font-weight: normal;">{{ consulta.perimetroEncefalico }} cm</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Fundoscopia:</label>
+                                        <span style="font-weight: normal;">{{ consulta.fundoscopia }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Ausculta Cardíaca:</label>
+                                        <span style="font-weight: normal;">{{ consulta.auscutaCardiaca }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Frequência Cardíaca:</label>
+                                        <span style="font-weight: normal;">{{ consulta.frequenciaCardiaca }} bpm</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Pressão Arterial:</label>
+                                        <span style="font-weight: normal;">{{ consulta.pressaoArterial }} mmHg</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Ausculta Pulmonar:</label>
+                                        <span style="font-weight: normal;">{{ consulta.auscutaPulmonar }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Frequência Respiratória:</label>
+                                        <span style="font-weight: normal;">{{ consulta.frequenciaRespiratoria }} rpm</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Oroscopia:</label>
+                                        <span style="font-weight: normal;">{{ consulta.oroscopia }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Otoscopia:</label>
+                                        <span style="font-weight: normal;">{{ consulta.otoscopia }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Exame Abdominal:</label>
+                                        <span style="font-weight: normal;">{{ consulta.exameAbdominal }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Geniturinário e Pelve:</label>
+                                        <span style="font-weight: normal;">{{ consulta.genituPelve }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Avaliação de Tanner:</label>
+                                        <span style="font-weight: normal;">{{ consulta.tanner }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Exame de Membros Inferiores:</label>
+                                        <span style="font-weight: normal;">{{ consulta.membrosInferiores }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Exame de Pele e Anexos:</label>
+                                        <span style="font-weight: normal;">{{ consulta.pele }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Outros Exames:</label>
+                                        <span style="font-weight: normal;">{{ consulta.outrosExames }}</span>
+                                    </div>
+
+                                    <!-- Avaliação e Plano de Conduta -->
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Avaliação:</label>
+                                        <span style="font-weight: normal;">{{ consulta.avaliacao }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">CID:</label>
+                                        <span style="font-weight: normal;">{{ consulta.cid }}</span>
+                                    </div>
+
+                                    <div class="field is-flex">
+                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Plano de Conduta:</label>
+                                        <span style="font-weight: normal;">{{ consulta.planoConduta }}</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="has-text-centered">Nenhuma consulta encontrada.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</body>
+</html>

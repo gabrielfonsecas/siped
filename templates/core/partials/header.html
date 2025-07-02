@@ -1,0 +1,60 @@
+<header>
+    {% load static %}
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        
+
+        <div id="navbarMenu" class="navbar-menu">
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link" href="{% url 'core/menu.html' %}"><b>Menu</b></a>
+                <div class="navbar-dropdown is-boxed">
+                    <a class="navbar-item" href="{% url 'nova_consulta_listar_pacientes' %}">Cadastrar Consulta</a>
+                    <a class="navbar-item" href="{% url 'cadastroPaciente' %}">Cadastrar Pacientes</a>
+                    <a class="navbar-item" href="{% url 'listar_consultas' %}">Visualizar Consultas</a>
+                    <a class="navbar-item" href="{% url 'paciente' %}">Visualizar Pacientes</a>
+                    <a class="navbar-item" href="{% url 'listar_paciente_grafico' %}">Visualizar Gráfico de Crescimento</a>
+                </div>
+            </div>
+
+        <!-- Logo centralizada -->
+        <div class="navbar-item is-centered" style="position: absolute; left: 50%; transform: translateX(-50%);">
+            <figure class="imageIndex">
+                <img src="{% static 'imagem/logo.png' %}" alt="Logo" style="max-height: 50px;">
+            </figure>
+        </div>
+
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                    <a class="navbar-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <span class="icon">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </span>
+                        <span>SAIR</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const burger = document.querySelector('.navbar-burger');
+        const menu = document.querySelector('.navbar-menu');
+
+        if (burger && menu) {
+            burger.addEventListener('click', () => {
+                burger.classList.toggle('is-active');
+                menu.classList.toggle('is-active');
+            });
+        }
+    });
+</script>

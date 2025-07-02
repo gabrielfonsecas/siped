@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'core/partials/head.html' %}
+    <title>Login</title>
+</head>
+<body>
+  {% load static %}
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-centered">
+              <div class="column is-5-tablet is-4-desktop is-3-widescreen has-text-centered">
+                <figure class="imageIndex">
+                  <img src="{% static 'imagem/logo.png' %}" alt="Logo">
+                </figure>
+                <form action="" class="box" method="post">
+                  {% csrf_token %}
+                  <div class="field">
+                    <label for="" class="label">Usuário</label>
+                    <div class="control has-icons-left">
+                      <input type="text" name="username" placeholder="usuário" class="input">
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="" class="label">Senha</label>
+                    <div class="control has-icons-left">
+                      <input type="password" name="password" placeholder="*******" class="input" required>
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <button class="button is-success">
+                      Entrar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+</body>
+</html>

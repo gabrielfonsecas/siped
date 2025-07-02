@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="pt-BR">
+<head>
+    {% include 'core/partials/head.html' %}
+    <title>Visualização de Paciente</title>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns">
+                    <div class="column">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">Buscar Paciente</p>
+                            </header>
+                            <div class="card-content">
+                                <div class="content">
+                                    <form action="{% url 'paciente' %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="field">
+                                            <label class="label">Nome do Paciente:</label>
+                                            <div class="control">
+                                                <select class="js-example-basic-single" name="id_paciente" style="width: 100%;">
+                                                    <option value="" disabled selected>Selecione o paciente</option>
+                                                    {% for paciente in pacientes %}
+                                                        <option value="{{ paciente.id_paciente }}">{{ paciente.nome }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="buttons is-right">
+                                            <input class="button is-primary is-rounded" type="submit" value="Ver Informações">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if paciente %}
+                <div class="columns">
+                    <div class="column">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title is-centered">Paciente</p>
+                            </header>
+                            <div class="card-content">
+                                <div class="content">
+                                    <div class="field">
+                                        <label class="label">Nome:</label>
+                                        <div class="control">
+                                            <input class="input" type="text" value="{{ paciente.nome }}" readonly style="width: calc({{ paciente.nome|length }}ch + 1rem);">
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Data de Nascimento:</label>
+                                        <div class="control">
+                                            <input class="input" type="text" value="{{ paciente.data_nascimento }}" readonly style="width: calc({{ paciente.nome|length }}ch + 1rem);">
+                                        </div>
+                                    </div>
+
+                                    <div class="columns">
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label">Sexo:</label>
+                                                <div class="control">
+                                                    <input class="input" type="text" value="{{ paciente.sexo }}" readonly style="width: 20ch;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label">Tipo Sanguíneo:</label>
+                                                <div class="control">
+                                                    <input class="input" type="text" value="{{ paciente.tipo_sanguineo }}" readonly style="width: 20ch;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="columns">
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label">CPF:</label>
+                                                <div class="control">
+                                                    <input class="input" type="text" value="{{ paciente.cpf }}" readonly style="width: 20ch;">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="column">        
+                                            <div class="field">
+                                                <label class="label">RG:</label>
+                                                <div class="control">
+                                                    <input class="input" type="text" value="{{ paciente.rg }}" readonly style="width: 20ch;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <br>
+                                    <br>
+                                    <p class="card-header-title is-centered">Responsável</p>
+                                    <br>
+
+                                    <div class="field">
+                                        <label class="label">Nome do Responsável:</label>
+                                        <div class="control">
+                                            <input class="input" type="text" value="{{ paciente.responsavel }}" readonly style="width: calc({{ paciente.responsavel|length }}ch + 1rem);">
+                                        </div>
+                                    </div>
+
+                                    <div class="columns">
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label">CPF do Responsável:</label>
+                                                <div class="control">
+                                                    <input class="input" type="text" value="{{ paciente.cpf_responsavel }}" readonly style="width: 20ch;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label">RG do Responsável:</label>
+                                                <div class="control">
+                                                    <input class="input" type="text" value="{{ paciente.rg_responsavel }}" readonly style="width: 20ch;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Telefone:</label>
+                                        <div class="control">
+                                            <input class="input" type="text" value="{{ paciente.telefone }}" readonly style="width: calc({{ paciente.telefone|length }}ch + 1rem);">
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Endereço:</label>
+                                        <div class="control">
+                                            <textarea class="textarea" readonly>{{ paciente.endereco }}</textarea>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- jQuery (necessário para o Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2({
+                placeholder: "Digite para buscar o paciente", // Texto do placeholder
+                allowClear: true,
+                width: 'resolve',
+                language: {
+                    noResults: function() {
+                        return "Nenhum paciente encontrado";
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

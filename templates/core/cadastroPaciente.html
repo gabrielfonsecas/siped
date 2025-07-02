@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="pt-BR">
+  <head>
+    {% include 'core/partials/head.html' %}
+    <title>Cadastro Paciente</title>
+  </head>
+<body>
+    {% include 'core/partials/header.html' %}
+    <section class="hero is-primary is-fullheight">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns">
+            <div class="column">
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title is-centered">Cadastro de Paciente</p>
+                </header>
+  
+                <div class="card-content">
+                  <div class="content">
+                    <form id="formCadastroPaciente" action="{% url 'cadastroPaciente' %}" method="post">
+                        {% csrf_token %}
+  
+                        <div class="field">
+                            <label class="label" for="nome">Nome do Paciente: <span class="required">*</span></label>
+                            <div class="control">
+                              <input class="input" type="text" id="nome" name="nome" placeholder="Digite o nome completo do paciente" required>
+                            </div>
+                          </div>
+                          
+                          <div class="columns">
+                            <div class="column is-one-third">
+                                <div class="field">
+                                    <label class="label" for="data_nascimento">Data de Nascimento: <span class="required">*</span></label>
+                                    <div class="control">
+                                        <input class="input" type="date" id="data_nascimento" name="data_nascimento" required>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                          
+                          <div class="columns">
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label">É Prematuro:</label>
+                                <div class="control">
+                                  <label class="radio">
+                                    <input type="radio" name="prematuro" value="true" id="prematuroSim">
+                                    Sim
+                                  </label>
+                                  <label class="radio">
+                                    <input type="radio" name="prematuro" value="false" id="prematuroNao" checked>
+                                    Não
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Campos de idade corrigida -->
+                          <div class="columns" id="campos-prematuro" style="display: none;">
+                            <div class="column is-one-third">
+                              <div class="field is-flex">
+                                <label class="label mr-2">Nasceu com quantas semanas:</label>
+                                  <input class="input" type="number" name="semanasCorrigidas" style="width:60px; height: 25px;" min="22" max="40" style="width: 80px;">
+                              </div>
+                            </div>
+                            
+                            <div class="column is-one-third" style="margin-top: -1rem;">
+                              <div class="field is-flex">
+                                <label class="label mr-2">Nasceu com quantos dias:</label>
+                                  <input class="input" type="number" name="diasCorrigidos" style="width:60px; height: 25px;" min="0" max="6" style="width: 80px;">
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="columns">
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label" for="sexo">Sexo: <span class="required">*</span></label>
+                                <div class="control">
+                                  <div class="select">
+                                    <select id="sexo" name="sexo" required>
+                                      <option value="" hidden>Selecione o sexo</option>
+                                      <option value="masculino">Masculino</option>
+                                      <option value="feminino">Feminino</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label" for="tipo_sanguineo">Tipo Sanguíneo:</label>
+                                <div class="control">
+                                  <div class="select">
+                                    <select id="tipo_sanguineo" name="tipo_sanguineo">
+                                      <option value="" hidden>Selecione o tipo sanguíneo</option>
+                                      <option value="a+">A+</option>
+                                      <option value="a-">A-</option>
+                                      <option value="b+">B+</option>
+                                      <option value="b-">B-</option>
+                                      <option value="ab+">AB+</option>
+                                      <option value="ab-">AB-</option>
+                                      <option value="o+">O+</option>
+                                      <option value="o-">O-</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="columns">
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label" for="cpf">CPF do Paciente:</span></label>
+                                <div class="control">
+                                  <input class="input" type="text" id="cpf" name="cpf" maxlength="11" placeholder="Digite o CPF do paciente">
+                                </div>
+                              </div>
+                            </div>
+                          
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label" for="rg">RG do Paciente: </label>
+                                <div class="control">
+                                  <input class="input" type="text" id="rg" name="rg" maxlength="7" placeholder="Digite o RG do paciente">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <br>
+                          <p class="card-header-title is-centered">Responsável</p>
+
+                          <div class="field">
+                            <label class="label" for="responsavel">Nome do Responsável: <span class="required">*</span></label>
+                            <div class="control">
+                              <input class="input" type="text" id="responsavel" name="responsavel" placeholder="Digite o nome do responsável" required>
+                            </div>
+                          </div>
+                          
+                          <div class="columns">
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label" for="cpf_responsavel">CPF do Responsável: <span class="required">*</span></label>
+                                <div class="control">
+                                  <input class="input" type="text" id="cpf_responsavel" name="cpf_responsavel" maxlength="11" placeholder="Digite o CPF do responsável" required>
+                                </div>
+                              </div>
+                            </div>
+                          
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label" for="rg_responsavel">RG do Responsável: </label>
+                                <div class="control">
+                                  <input class="input" type="text" id="rg_responsavel" name="rg_responsavel" maxlength="7" placeholder="Digite o RG do responsável">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="field">
+                            <label class="label" for="telefone">Telefone: <span class="required">*</span></label>
+                            <div class="control">
+                              <input class="input" type="tel" id="telefone" name="telefone" maxlength="12" placeholder="Digite o telefone" required>
+                            </div>
+                          </div>
+                          
+                          <div class="field">
+                            <label class="label" for="endereco">Endereço: </label>
+                            <div class="control">
+                              <textarea class="textarea" id="endereco" name="endereco" placeholder="Digite o endereço"></textarea>
+                            </div>
+                        </div>
+
+                         <br>
+                        
+                         <div class="field is-grouped" style="justify-content: flex-end; gap: 0.5rem;">
+                          <button class="button is-success"  type="submit">
+                              <span class="icon is-small">
+                              <i class="fas fa-check"></i>
+                              </span>
+                              <span>Salvar</span>
+                          </button>
+
+                          <button class="button is-danger is-outlined"  type="button" onclick="window.location.href='{% url 'core/menu.html' %}';">
+                              <span>Cancelar</span>
+                              <span class="icon is-small">
+                              <i class="fas fa-times"></i>
+                              </span>
+                          </button>
+                        </div>
+                      </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const radioPrematuroSim = document.getElementById('prematuroSim');
+    const radioPrematuroNao = document.getElementById('prematuroNao');
+    const camposPrematuro = document.getElementById('campos-prematuro');
+
+    function toggleCamposPrematuro() {
+        camposPrematuro.style.display = radioPrematuroSim.checked ? 'block' : 'none';
+        
+        // Opcional: Limpar campos quando ocultar
+        if (!radioPrematuroSim.checked) {
+            document.querySelector('input[name="semanasCorrigidas"]').value = '';
+            document.querySelector('input[name="diasCorrigidos"]').value = '';
+        }
+    }
+
+    // Adiciona listeners a ambos os radios
+    if (radioPrematuroSim && radioPrematuroNao && camposPrematuro) {
+        radioPrematuroSim.addEventListener('change', toggleCamposPrematuro);
+        radioPrematuroNao.addEventListener('change', toggleCamposPrematuro);
+        
+        // Inicializa o estado
+        toggleCamposPrematuro();
+    }
+});
+
+function calcularIdadeCorrigida(){
+
+}
+
+/*
+function calcularIdade(dataNascimento, idadeSpanId) {
+    const idadeSpan = document.getElementById(idadeSpanId);
+    if (idadeSpan && dataNascimento) {
+        const hoje = new Date();
+        const nascimento = new Date(dataNascimento);
+        let anos = hoje.getFullYear() - nascimento.getFullYear();
+        let meses = hoje.getMonth() - nascimento.getMonth();
+        let dias = hoje.getDate() - nascimento.getDate();
+        if (meses < 0 || (meses === 0 && dias < 0)) {
+            anos--;
+            meses += 12;
+        }
+        if (dias < 0) {
+            const ultimoDiaMesAnterior = new Date(
+                hoje.getFullYear(),
+                hoje.getMonth(),
+                0
+            ).getDate();
+            dias += ultimoDiaMesAnterior;
+            meses--;
+        }
+        idadeSpan.textContent = `${anos} anos ${meses} meses ${dias} dias`;
+    } else if (idadeSpan) {
+        idadeSpan.textContent = "Data de nascimento não disponível";
+    }
+}
+*/
+
+// Funções de formatação
+function formatarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, '');
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+
+
+// Função de validação de CPF
+function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, '');
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
+        return false;
+    }
+    let soma = 0;
+    let resto;
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) {
+        resto = 0;
+    }
+    if (resto !== parseInt(cpf.substring(9, 10))) {
+        return false;
+    }
+    soma = 0;
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) {
+        resto = 0;
+    }
+    return resto === parseInt(cpf.substring(10, 11));
+}
+
+// Funções para verificar CPF único (requisição AJAX)
+async function validarCPFUnico(cpf) {
+    const response = await fetch(`/verificar_cpf/?cpf=${cpf}`);
+    const data = await response.json();
+    return !data.cpf_existe;
+}
+
+
+// Validação do formulário de cadastro de paciente
+function inicializarCadastroPaciente() {
+    const form = document.getElementById('formCadastroPaciente');
+    if (!form) return;
+    const nomePacienteInput = document.getElementById('nome');
+    const nomeResponsavelInput = document.getElementById('responsavel');
+    const dataNascimentoInput = document.getElementById('data_nascimento');
+    const telefoneInput = document.getElementById('telefone');
+    const cpfInput = document.getElementById('cpf');
+    const cpfResponsavelInput = document.getElementById('cpf_responsavel');
+
+    form.addEventListener('submit', async function (event) {
+        const hoje = new Date();
+        const dataNascimento = new Date(dataNascimentoInput.value);
+        if (dataNascimento > hoje) {
+            event.preventDefault();
+            alert('A data de nascimento não pode ser superior ao dia de hoje.');
+            dataNascimentoInput.focus();
+            return;
+        }
+
+        // Validação de CPF do paciente (agora opcional)
+        let cpfFormatado = '';
+        if (cpfInput.value.trim()) {
+            cpfFormatado = formatarCPF(cpfInput.value);
+            if (!validarCPF(cpfFormatado)) {
+                event.preventDefault();
+                alert('CPF do paciente inválido.');
+                cpfInput.focus();
+                return;
+            }
+            // Verificar CPF único apenas se informado
+            const cpfValido = await validarCPFUnico(cpfFormatado);
+            if (!cpfValido) {
+                event.preventDefault();
+                alert('CPF de paciente já cadastrado.');
+                return;
+            }
+        }
+        // Validação de CPF do responsável (obrigatório)
+        const cpfResponsavelFormatado = formatarCPF(cpfResponsavelInput.value);
+        if (!validarCPF(cpfResponsavelFormatado)) {
+            event.preventDefault();
+            alert('CPF do responsável inválido.');
+            cpfResponsavelInput.focus();
+            return;
+        }
+        if (cpfFormatado && cpfFormatado === cpfResponsavelFormatado) {
+            event.preventDefault();
+            alert('O CPF do paciente não pode ser igual ao CPF do responsável.');
+            return;
+        }
+        const cpfResponsavelValido = await validarCPFResponsavelUnico(cpfResponsavelFormatado);
+        if (!cpfResponsavelValido) {
+            event.preventDefault();
+            alert('CPF do responsável já cadastrado como CPF de paciente.');
+            return;
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    inicializarCadastroPaciente();
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const nomePacienteInput = document.getElementById('nome');
+    const nomeResponsavelInput = document.getElementById('responsavel');
+
+    function removerNumeros(e) {
+        e.target.value = e.target.value.replace(/[0-9]/g, '');
+    }
+
+    if (nomePacienteInput) {
+        nomePacienteInput.addEventListener('input', removerNumeros);
+    }
+    if (nomeResponsavelInput) {
+        nomeResponsavelInput.addEventListener('input', removerNumeros);
+    }
+});
+
+$(document).ready(function() {
+    $('#cpf').mask('000.000.000-00', {reverse: true});
+    $('#cpf_responsavel').mask('000.000.000-00', {reverse: true});
+    $('#rg').mask('00.000.000', {reverse: true});
+    $('#rg_responsavel').mask('00.000.000', {reverse: true});
+    $('#telefone').mask('(00) 0 0000-0000');
+});
+</script>
+</body>
+</html>
+
+

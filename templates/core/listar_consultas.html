@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    {% include 'core/partials/head.html' %}
+    <title>Listagem de Consultas</title>
+</head>
+<body>
+    {% include 'core/partials/header.html' %}
+    <br>
+    <br>
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns">
+                    <div class="column">
+                        <div class="card" id="buscar-paciente-card">
+                            <header class="card-header">
+                                <p class="card-header-title is-centered">Consultas</p>
+                            </header>
+                            <div class="card-content">
+                                <div class="content">
+                                    <label class="label">Paciente:</label>
+                                    <form method="get" class="mb-4">
+                                        <div class="field has-addons">
+                                            <div class="control">
+                                                <input class="input" type="text" name="nome" placeholder="Digite o nome do paciente" value="{{ request.GET.nome }}">
+                                            </div>
+                                            <div class="control">
+                                                <button class="button is-primary" type="submit">Buscar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                        
+                                    <!-- Tabela de Consultas -->
+                                    <table class="table is-striped is-hoverable">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome do Paciente</th>
+                                                <th>Data de Nascimento</th>
+                                                <th>Data da Consulta</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for consulta in consultas %}
+                                            <tr>
+                                                <td>{{ consulta.nome|title }}</td>
+                                                <td>{{ consulta.paciente.data_nascimento|date:"d/m/Y" }}</td>
+                                                <td>{{ consulta.dataConsulta }}</td>
+                                                <td>
+                                                    <a href="{% url 'consulta' consulta.id %}" class="button is-small is-info">Visualizar</a>
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="4" class="has-text-centered">Nenhuma consulta encontrada.</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                                        {% if consultas.has_previous %}
+                                            <a class="pagination-previous" href="?page={{ consultas.previous_page_number }}{% if request.GET.nome %}&nome={{ request.GET.nome }}{% endif %}">Anterior</a>
+                                        {% else %}
+                                            <a class="pagination-previous" disabled>Anterior</a>
+                                        {% endif %}
+                                        {% if consultas.has_next %}
+                                            <a class="pagination-next" href="?page={{ consultas.next_page_number }}{% if request.GET.nome %}&nome={{ request.GET.nome }}{% endif %}">Próxima</a>
+                                        {% else %}
+                                            <a class="pagination-next" disabled>Próxima</a>
+                                        {% endif %}
+                                        <ul class="pagination-list">
+                                            {% for num in consultas.paginator.page_range %}
+                                                {% if consultas.number == num %}
+                                                    <li><a class="pagination-link is-current">{{ num }}</a></li>
+                                                {% else %}
+                                                    <li><a class="pagination-link" href="?page={{ num }}{% if request.GET.nome %}&nome={{ request.GET.nome }}{% endif %}">{{ num }}</a></li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    {% include 'core/partials/head.html' %}  
+    <title>Editar Paciente</title>
+</head>
+<body>
+    <br>
+    <br>
+    {% include 'core/partials/header.html' %}
+    <section class="hero is-primary is-fullheight">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns">
+            <div class="column">
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title is-centered">Editar Paciente</p>
+                </header>
+  
+                <div class="card-content">
+                  <div class="content">
+                    <form id="formEditarPaciente" action="{% url 'editarPaciente' paciente.id_paciente %}" method="post">
+                        {% csrf_token %}
+  
+                        <div class="field">
+                            <label class="label" for="nome">Nome do Paciente: <span class="required">*</span></label>
+                            <div class="control">
+                              <input class="input" type="text" id="nome" name="nome" value="{{ paciente.nome|title }}" required>
+                            </div>
+                        </div>
+                          
+                        <div class="columns">
+                            <div class="column is-one-third">
+                                <div class="field">
+                                    <label class="label" for="data_nascimento">Data de Nascimento: <span class="required">*</span></label>
+                                    <div class="control">
+                                        <input class="input" type="date" id="data_nascimento" name="data_nascimento" value="{{ paciente.data_nascimento|date:'Y-m-d' }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                          
+                        <div class="columns">
+                            <div class="column is-one-third">
+                                <div class="field">
+                                    <label class="label" for="sexo">Sexo: <span class="required">*</span></label>
+                                    <div class="control">
+                                        <div class="select">
+                                            <select id="sexo" name="sexo">
+                                            <option value="" hidden>Selecione o sexo</option>
+                                            <option value="masculino" {% if paciente.sexo == "masculino" %}selected{% endif %}>Masculino</option>
+                                            <option value="feminino" {% if paciente.sexo == "feminino" %}selected{% endif %}>Feminino</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          
+                            <div class="column is-one-third">
+                                <div class="field">
+                                    <label class="label" for="tipo_sanguineo">Tipo Sanguíneo:</label>
+                                    <div class="control">
+                                        <div class="select">
+                                            <select id="tipo_sanguineo" name="tipo_sanguineo">
+                                            <option value="" hidden>Selecione o tipo sanguíneo</option>
+                                            <option value="a+" {% if paciente.tipo_sanguineo == "a+" %}selected{% endif %}>A+</option>
+                                            <option value="a-" {% if paciente.tipo_sanguineo == "a-" %}selected{% endif %}>A-</option>
+                                            <option value="b+" {% if paciente.tipo_sanguineo == "b+" %}selected{% endif %}>B+</option>
+                                            <option value="b-" {% if paciente.tipo_sanguineo == "b-" %}selected{% endif %}>B-</option>
+                                            <option value="ab+" {% if paciente.tipo_sanguineo == "ab+" %}selected{% endif %}>AB+</option>
+                                            <option value="ab-" {% if paciente.tipo_sanguineo == "ab-" %}selected{% endif %}>AB-</option>
+                                            <option value="o+" {% if paciente.tipo_sanguineo == "o+" %}selected{% endif %}>O+</option>
+                                            <option value="o-" {% if paciente.tipo_sanguineo == "O-" %}selected{% endif %}>O-</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                          
+                        <div class="columns">
+                            <div class="column is-one-third">
+                                <div class="field">
+                                    <label class="label" for="cpf">CPF do Paciente:</label>
+                                        <div class="control">
+                                        <input class="input" type="text" id="cpf" name="cpf" maxlength="14" value="{{ paciente.cpf }}">
+                                        </div>
+                                </div>
+                            </div>
+                          
+                            <div class="column is-one-third">
+                                <div class="field">
+                                    <label class="label" for="rg">RG do Paciente: <span class="required">*</span></label>
+                                    <div class="control">
+                                    <input class="input" type="text" id="rg" name="rg" maxlength="12" value="{{ paciente.rg }}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                          <br>
+                          <p class="card-header-title is-centered">Responsável</p>
+
+                        <div class="field">
+                            <label class="label" for="responsavel">Nome do Responsável: <span class="required">*</span></label>
+                            <div class="control">
+                              <input class="input" type="text" id="responsavel" name="responsavel" value="{{ paciente.responsavel|title }}" required>
+                            </div>
+                        </div>
+                          
+                        <div class="columns">
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label" for="cpf_responsavel">CPF do Responsável: <span class="required">*</span></label>
+                                <div class="control">
+                                  <input class="input" type="text" id="cpf_responsavel" name="cpf_responsavel" maxlength="14" value="{{ paciente.cpf_responsavel }}" required>
+                                </div>
+                              </div>
+                            </div>
+                          
+                            <div class="column is-one-third">
+                              <div class="field">
+                                <label class="label" for="rg_responsavel">RG do Responsável: <span class="required">*</span></label>
+                                <div class="control">
+                                  <input class="input" type="text" id="rg_responsavel" name="rg_responsavel" maxlength="12" value="{{ paciente.rg_responsavel }}" required>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                          
+                        <div class="field">
+                            <label class="label" for="telefone">Telefone: <span class="required">*</span></label>
+                            <div class="control">
+                              <input class="input" type="tel" id="telefone" name="telefone" maxlength="15" value="{{ paciente.telefone }}" required>
+                            </div>
+                        </div>
+                          
+                        <div class="field">
+                            <label class="label" for="endereco">Endereço: <span class="required">*</span></label>
+                            <div class="control">
+                              <textarea class="textarea" id="endereco" name="endereco" required>{{ paciente.endereco }}</textarea>
+                            </div>
+                        </div>
+
+                         <br>
+                        
+                        <div class="field is-grouped" style="justify-content: flex-end; gap: 0.5rem;">
+                          <button class="button is-success"  type="submit">
+                              <span class="icon is-small">
+                              <i class="fas fa-check"></i>
+                              </span>
+                              <span>Salvar</span>
+                          </button>
+
+                          <button class="button is-danger is-outlined"  type="button" onclick="window.history.back();">
+                              <span>Cancelar</span>
+                              <span class="icon is-small">
+                              <i class="fas fa-times"></i>
+                              </span>
+                          </button>
+                        </div>
+                      </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#cpf').mask('000.000.000-00', {reverse: true});
+    $('#cpf_responsavel').mask('000.000.000-00', {reverse: true});
+    $('#rg').mask('00.000.000', {reverse: true});
+    $('#rg_responsavel').mask('00.000.000', {reverse: true});
+    $('#telefone').mask('(00) 0 0000-0000');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização de Paciente</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css"> 
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        /* Estilo para esconder o conteúdo inicialmente */
+        .is-hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    
+
+<section class="hero is-primary is-fullheight">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns">
+                <div class="column">
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title is-centered">Cadastro de Consulta</p>
+                        </header>
+        
+                        <div class="card-content">
+                            <div class="content">
+                                <form id="formCadastroPaciente" action="{% url 'cadastroPaciente' %}" method="post">
+                                {% csrf_token %}
+            
+                                    <div class="columns">
+                                        <div class="column is-half">
+                                            <div class="field">
+                                                <label class="label" for="nome">Nome do Paciente: <span class="required">*</span></label>
+                                                    <div class="control">
+                                                        <input class="input" type="text" id="nome" name="nome" placeholder="Digite o nome completo do paciente">
+                                                    </div>
+                                            </div><!--inserir como read-->
+                                        </div>
+                                    </div>
+
+                                    
+                                    <div class="columns">
+                                        <div class="column is-one-third">
+                                            <div class="field">
+                                                <label class="label" for="data_consulta">Data da Consulta:</label>
+                                                <div class="control">
+                                                    <input class="input" type="date" id="data_consulta" name="data_consulta" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <br>
+                                    <p class="card-header-title is-centered">Histórico do Paciente</p>
+                                    <br>
+
+                                    <!--Inserir histórico do paciente como read
+                                    if (consulta) == null:
+                                    <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">Data Ultima Consulta:</label>
+                                            <span style="font-weight: normal;">Nenhuma consulta registrada</span>
+                                    </div>
+                                    else:
+                                    <div class="field is-flex"> Pegar a data mais alta da consulta
+                                            <label class="label" font-weight: bold;">Data Ultima Consulta:</label>
+                                            <span style="font-weight: normal;">{{ consulta.dataConsulta }}</span>
+                                    </div>
+                                            <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">Possui Doença Prévia:</label>
+                                            <span style="font-weight: normal;">{{ consulta.doencaPrevia }}</span>
+                                    </div>
+                                            <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">Faz Uso de Medicamentos:</label>
+                                            <span style="font-weight: normal;">{{ consulta.medicamentoUso }}</span>
+                                    </div>
+                                            <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">Histórico Gestacional:</label>
+                                            <span style="font-weight: normal;">{{ consulta.historicoGestacional }}</span>
+                                    </div>
+                                            <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">peso(kg):</label>
+                                            <span style="font-weight: normal;">{{ consulta.peso }}</span>
+                                    </div>
+                                            <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">Estatura:</label>
+                                            <span style="font-weight: normal;">{{ consulta.estatura }}</span>
+                                    </div>
+                                    </div>
+                                            <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">peso:</label>
+                                            <span style="font-weight: normal;">{{ consulta.peso }}</span>
+                                    </div>
+                                    </div>
+                                            <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">Avaliação:</label>
+                                            <span style="font-weight: normal;">{{ consulta.avaliacao }}</span>
+                                    </div>
+                                                                </div>
+                                            <div class="field is-flex">
+                                            <label class="label" font-weight: bold;">Plano de Conduta:</label>
+                                            <span style="font-weight: normal;">{{ consulta.planoConduta }}</span>
+                                    </div>
+                                    -->
+                                    <hr style="border: 1px solid #ccc; margin: 20px 0;">
+                                    <br>
+                                    <div class="columns is-centered">
+                                        <div class="column is-two-fifths">
+                                            <div class="field">
+                                                <label class="label" for="doencaPrevia">Possui Doença Prévia:</label>
+                                                <div class="control">
+                                                    <label class="radio">
+                                                        <input type="radio" name="doencaPrevia" value="sim" id="doencaPreviaSim">
+                                                        Sim
+                                                    </label>
+                                                    <label class="radio">
+                                                        <input type="radio" name="doencaPrevia" value="nao" id="doencaPreviaNao">
+                                                        Não
+                                                    </label>
+                                                </div>
+                                                <div class="field campo-texto" id="campoDoencaPrevia" style="display: none;">
+                                                    <div class="control">
+                                                        <input class="input" type="text" placeholder="Especifique a doença prévia...">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="column is-two-fifths">
+                                            <div class="field">
+                                                <label class="label" for="medicamentoUso">Faz Uso de Medicamentos:</label>
+                                                <div class="control">
+                                                    <label class="radio">
+                                                        <input type="radio" name="medicamentoUso" value="sim" id="medicamentoUsoSim">
+                                                        Sim
+                                                    </label>
+                                                    <label class="radio">
+                                                        <input type="radio" name="medicamentoUso" value="nao" id="medicamentoUsoNao">
+                                                        Não
+                                                    </label>
+                                                </div>
+                                                <div class="field campo-texto" id="campoMedicamentoUso" style="display: none;">
+                                                    <div class="control">
+                                                        <input class="input" type="text" placeholder="Especifique o medicamento...">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <hr style="margin: 20px 0;">
+                                    <div class="text-center">
+                                        <p class="card-header-title is-centered is-size-4">SUBJETIVO</p>
+                                    </div>
+                                    <br>
+                                    
+                                    <div class="field">
+                                        <label class="label" for="historicoGestacional">Histórico Gestacional: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="historicoGestacional" name="historicoGestacional" placeholder="Digite o histórico gestacional do paciente">
+                                            </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="anamnese">Anamnese: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="anamnese" name="anamnese" placeholder="Digite a evolução do paciente">
+                                            </div>    
+                                    </div>
+                                    <br>
+
+                                    <hr style="margin: 20px 0;">
+                                    <div class="text-center">
+                                        <p class="card-header-title is-centered is-size-4">OBJETIVO</p>
+                                    </div>
+                                    <br>
+                                    
+                                    <div class="columns">
+                                        <div class="column is-one-third">
+                                            <div class="field">
+                                                <label class="label" for="pesoInput">Peso(kg):</label>
+                                                    <div class="control">
+                                                        <input class="input" type="number" step="0.1" id="pesoInput" name="peso" placeholder="Digite o peso do paciente">
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="column is-one-third">
+                                            <div class="field">
+                                                <label class="label" for="estaturaInput">Estatura(cm):</label>
+                                                    <div class="control">
+                                                        <input class="input" type="number" step="0.1" id="estaturaInput" name="estatura" placeholder="Digite a estatura do paciente">
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label">&nbsp;</label>
+                                                    <div class="control">
+                                                        <button class="button is-link" type="button" onclick="calcularIMC()">Calcular IMC</button>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="imcResult">IMC: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="imcResult" name="imcResult" placeholder="IMC"readonly>
+                                            </div>
+                                    </div>
+
+                                    <div class="table-container" id="imcTable" style="display: none;">
+                                        <div class="card-content">
+                                            <div class="columns">
+                                                <div class="column">
+                                                    <div class="field">
+                                                        <label class="label">Classificação: </label>
+                                                            <div class="control">
+                                                                <span id="imcClassificacao"></span> <!-- Onde a classificação será exibida -->
+                                                            </div>
+                                                    </div>                                               
+                                                </div>
+                                                <div class="column">
+                                                    <table class="table is-striped" style="max-width: 70%;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Classificação</th>
+                                                                <th>IMC (kg/m²)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Abaixo do peso</td>
+                                                                <td>Menor que 18.5</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Peso normal</td>
+                                                                <td>Entre 18.5 - 24.9</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Sobrepeso</td>
+                                                                <td>Entre 25 - 29.9</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Obesidade grau I</td>
+                                                                <td>Entre 30 - 34.9</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Obesidade grau II</td>
+                                                                <td>Entre 35 - 39.9</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Obesidade grau III</td>
+                                                                <td>Maior ou igual 40</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="columns">
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label" for="perimetroEncefalico">Perímetro Encefálico: </label>
+                                                    <div class="control">
+                                                        <input class="input" type="number" step="0.1" id="perimetroEncefalico" name="perimetroEncefalico" placeholder="Digite o perímetro encefálico do paciente">
+                                                    </div>
+                                            </div>
+                                        </div> 
+                                        
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label" for="fundoscopia">Fundoscopia: </label>
+                                                    <div class="control">
+                                                        <input class="input" type="number" step="0.1" id="fundoscopia" name="fundoscopia" placeholder="Descreva o exame de fundoscopia do paciente">
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="auscutaCardiaca">Auscuta Cardíaca: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="auscutaCardiaca" name="auscutaCardiaca" placeholder="Descreva a auscuta cardíaca do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="columns">
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label" for="frequenciaCardiaca">Frequência Cardíaca: </label>
+                                                    <div class="control">
+                                                        <input class="input" type="text" id="frequenciaCardiaca" name="frequenciaCardiaca" placeholder="Digite a frequência cardíaca do paciente">
+                                                    </div>  
+                                            </div>
+                                        </div>   
+                                        
+                                        <div class="column">
+                                            <div class="field">
+                                                <label class="label" for="pressaoArterial">Pressão Arterial: </label>
+                                                    <div class="control">
+                                                        <input class="input" type="number" step="0.1" id="pressaoArterial" name="pressaoArterial" placeholder="Digite a pressão arterial do paciente">
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="auscutaPulmonar">Auscuta Pulmonar: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="auscutaPulmonar" name="auscutaPulmonar" placeholder="Descreva a auscuta pulmonar do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="columns">
+                                        <div class="column is-half">
+                                            <div class="field">
+                                                <label class="label" for="frequenciaRespiratoria">Frequência Respiratória: </label>
+                                                    <div class="control">
+                                                        <input class="input" type="number" step="0.1" id="frequenciaRespiratoria" name="frequenciaRespiratoria" placeholder="Digite a frequência repisratória paciente">
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="field">
+                                        <label class="label" for="oroscopia">Oroscopia: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="oroscopia" name="oroscopia" placeholder="Descreva o exame de OROSCOPIA do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="otoscopia">Otoscopia: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="otoscopia" name="otoscopia" placeholder="Descreva o exame de OTOSCOPIA do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="exameAbdominal">Exame Abdominal: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="exameAbdominal" name="exameAbdominal" placeholder="Descreva o exame abdominal do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="genituPelve">Geniturinário e Pelve: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="genituPelve" name="genituPelve" placeholder="Descreva o exame geniturinário e pelve do paciente">
+                                            </div>  
+                                    </div>
+                                                                <div class="field">
+                                        <label class="label" for="genituPelve">Geniturinário e Pelve: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="genituPelve" name="genituPelve" placeholder="Descreva o exame geniturinário e pelve do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="tanner">Avaliação de Tanner: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="tanner" name="tanner" placeholder="Descreva a avaliação de tanner do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="membrosInferiores">Exame de Membros Inferiores: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="membrosInferiores" name="membrosInferiores" placeholder="Descreva o exame de membros inferiores do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="pele">Exame de Pele e Anexos: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="pele" name="pele" placeholder="Descreva o exame de pele e anexos do paciente">
+                                            </div>  
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="outrosExames">Outros Exames Realizados: </label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="outrosExames" name="outrosExames" placeholder="Descreva os outros exames ralizados no paciente">
+                                            </div>  
+                                    </div>
+                                    <br>
+
+                                    <hr style="margin: 20px 0;">
+                                    <div class="text-center">
+                                        <p class="card-header-title is-centered is-size-4">AVALIAÇÃO</p>
+                                    </div>
+                                    <br>
+
+                                    <div class="field">
+                                        <label class="label" for="avaliacao">Avaliação:</label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="avaliacao" name="avaliacao" placeholder="Descreva a avaliação do paciente"></input>
+                                            </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label" for="cid">CID:</label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="cid" name="cid" placeholder="Digite o CID do paciente"></input>
+                                            </div>
+                                    </div>
+                                    <br>
+
+                                    <hr style="margin: 20px 0;">
+                                    <div class="text-center">
+                                        <p class="card-header-title is-centered is-size-4">PLANO DE CONDUTA</p>
+                                    </div>
+                                    <br>
+
+                                    <div class="field">
+                                        <label class="label" for="planoConduta">Plano de Conduta:</label>
+                                            <div class="control">
+                                                <input class="input" type="text" id="planoConduta" name="planoConduta" placeholder="Descreva o plano de conduta do paciente"></input>
+                                            </div>
+                                    </div>
+
+                                    <br>
+                                    <div class="field is-grouped" style="justify-content: flex-end; gap: 0.5rem;">
+                                        <button class="button is-success">
+                                            <span class="icon is-small">
+                                            <i class="fas fa-check"></i>
+                                            </span>
+                                            <span>Salvar</span>
+                                        </button>
+
+                                        <button class="button is-danger is-outlined">
+                                            <span>Cancelar</span>
+                                            <span class="icon is-small">
+                                            <i class="fas fa-times"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    
+        <!-- jQuery (necessário para o Select2) -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Select2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.js-example-basic-single').select2({
+                    placeholder: "Selecione o paciente", // Placeholder personalizado
+                    allowClear: true // Permite limpar a seleção
+                });
+            });
+            // Lógica para mostrar e esconder o conteúdo do card
+            document.querySelectorAll('.toggle-dropdown').forEach(icon => {
+                icon.addEventListener('click', () => {
+                    const cardContent = icon.closest('.card-header').nextElementSibling;
+                    const isHidden = cardContent.classList.contains('is-hidden');
+    
+                    // Alterna a visibilidade do conteúdo
+                    if (isHidden) {
+                        cardContent.classList.remove('is-hidden');
+                        icon.querySelector('.icon i').classList.remove('fa-angle-down');
+                        icon.querySelector('.icon i').classList.add('fa-angle-up');
+                    } else {
+                        cardContent.classList.add('is-hidden');
+                        icon.querySelector('.icon i').classList.remove('fa-angle-up');
+                        icon.querySelector('.icon i').classList.add('fa-angle-down');
+                    }
+                });
+            });
+    
+            // Lógica para mostrar/ocultar os campos de doenças prévias e medicamentos
+            const doencaPrevias = document.querySelectorAll('input[name="doencaPrevia"]');
+            const medicamentoUso = document.querySelectorAll('input[name="medicamentoUso"]');
+    
+            doencaPrevias.forEach(input => {
+                input.addEventListener('change', function () {
+                    const campoDoencaPrevias = document.getElementById('campoDoencaPrevia');
+                    campoDoencaPrevias.style.display = this.value === 'sim' ? 'block' : 'none';
+                });
+            });
+    
+            medicamentoUso.forEach(input => {
+                input.addEventListener('change', function () {
+                    const campoMedicamentoUso = document.getElementById('campoMedicamentoUso');
+                    campoMedicamentoUso.style.display = this.value === 'sim' ? 'block' : 'none';
+                });
+            });
+    
+function calcularIMC() {
+    // Obtém os valores de peso e estatura
+    const peso = parseFloat(document.getElementById('pesoInput').value);
+    const estatura = parseFloat(document.getElementById('estaturaInput').value) / 100; // Converte cm para metros
+
+    // Verifica se os valores são válidos
+    if (!isNaN(peso) && !isNaN(estatura) && estatura > 0) {
+        // Calcula o IMC
+        const imc = (peso / (estatura * estatura)).toFixed(2);
+        document.getElementById('imcResult').value = imc;
+
+        // Determina a classificação do IMC
+        let classificacao;
+        if (imc < 18.5) {
+            classificacao = "Abaixo do peso - Menor que 18.5";
+        } else if (imc >= 18.5 && imc <= 24.9) {
+            classificacao = "Peso normal - Entre 18.5 e 24.9";
+        } else if (imc >= 25 && imc <= 29.9) {
+            classificacao = "Sobrepeso - Entre 25 e 29.9";
+        } else if (imc >= 30 && imc <= 34.9) {
+            classificacao = "Obesidade grau I - Entre 30 e 34.9";
+        } else if (imc >= 35 && imc <= 39.9) {
+            classificacao = "Obesidade grau II - Entre 35 e 39.9";
+        } else {
+            classificacao = "Obesidade grau III - Maior ou igual a 40";
+        }
+
+        // Exibe a classificação e a tabela de IMC
+        document.getElementById('imcClassificacao').textContent = classificacao;
+        document.getElementById('imcTable').style.display = 'block';
+    } else {
+        // Exibe um alerta se os valores forem inválidos
+        alert('Por favor, preencha os campos de peso e estatura corretamente.');
+    }
+}
+
+            function addVaccines() {
+            const selectedVaccinesList = document.getElementById('selected-vaccines');
+            const checkboxes = document.querySelectorAll('#vaccine-form input[type="checkbox"]:checked');
+
+            checkboxes.forEach(checkbox => {
+                // Cria um novo item de lista para a vacina selecionada
+                const listItem = document.createElement('li');
+                listItem.textContent = checkbox.value; // Obtém o valor do checkbox
+                selectedVaccinesList.appendChild(listItem); // Adiciona à lista
+
+                // Desmarca o checkbox
+                checkbox.checked = false;
+
+                // Oculta o checkbox na lista de seleção
+                checkbox.parentElement.style.display = 'none';
+            });
+
+            // Atualiza a lista de vacinas disponíveis
+            updateAvailableVaccines();
+            }
+
+            function updateAvailableVaccines() {
+            const checkboxes = document.querySelectorAll('#vaccine-form input[type="checkbox"]');
+            const selectedVaccines = Array.from(document.querySelectorAll('#selected-vaccines li')).map(li => li.textContent);
+
+            checkboxes.forEach(checkbox => {
+                if (selectedVaccines.includes(checkbox.value)) {
+                    checkbox.parentElement.style.display = 'none'; // Oculta o checkbox na lista de seleção
+                } else {
+                    checkbox.parentElement.style.display = 'block'; // Exibe o checkbox caso não esteja selecionado
+                }
+            });
+            }
+
+        </script>
+</body>
+</html>
