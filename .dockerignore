@@ -1,0 +1,25 @@
+# Ignorar o ambiente virtual Python
+.venv/
+env/
+
+# Ignorar arquivos de cache do Python
+__pycache__/
+*.pyc
+
+# Ignorar o banco de dados SQLite local
+*.sqlite3
+
+# Ignorar o arquivo de variáveis de ambiente local
+.env
+
+# Ignorar diretórios de uploads de usuários (se você tiver)
+media/
+
+# Ignorar diretórios de arquivos estáticos coletados (se você tiver, para evitar duplicidade ou cache)
+static_collected/
+
+# Ignorar a pasta .git
+.git/
+
+# Ignorar logs de debug
+*.log
