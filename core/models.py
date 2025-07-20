@@ -4,7 +4,7 @@ class Cadastro(models.Model):
     id_paciente = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=255, null=True, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
-    prematuro = models.CharField(max_length=3, choices=[('sim', 'Sim'), ('nao', 'Não')], blank=True, null=True)
+    prematuro = models.CharField(max_length=5, choices=[('sim', 'Sim'), ('nao', 'Não')], blank=True, null=True)
     semanasCorrigidas = models.IntegerField(null=True, blank=True)
     diasCorrigidos = models.IntegerField(null=True, blank=True)
     sexo = models.CharField(max_length=10, null=True, blank=True, choices=[
