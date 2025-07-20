@@ -32,6 +32,7 @@ LOGIN_REDIRECT_URL = '/menu/'
 
 ALLOWED_HOSTS = ['siped-production.up.railway.app', '127.0.0.1']
 
+CSRF_TRUSTED_ORIGINS = ['https://siped-production.up.railway.app']
 
 # Application definition
 
