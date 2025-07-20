@@ -30,7 +30,7 @@ DEBUG = True
 LOGIN_URL = 'index.html'
 LOGIN_REDIRECT_URL = '/menu/'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['siped-production.up.railway.app', '127.0.0.1']
 
 
 # Application definition
