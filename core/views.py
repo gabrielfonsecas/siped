@@ -7,6 +7,7 @@ from django.contrib.auth import views as auth_views
 from django.http import JsonResponse
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.db.models import Q
 
 
 # from django.urls import reverse_lazy
@@ -264,9 +265,11 @@ def listar_consultas(request):
     # Obtém o parâmetro de busca
     nome = request.GET.get('nome', '')
 
-    # Filtra as consultas pelo nome do paciente e ordena por data (mais recentes primeiro)
     if nome:
-        consultas = NovaConsulta.objects.filter(paciente__nome__icontains=nome).select_related('paciente').order_by('-dataConsulta')
+        # Filtra pelo nome do paciente ou pelo CPF do responsável vinculado
+        consultas = NovaConsulta.objects.filter(
+            Q(paciente__nome__icontains=nome) | Q(paciente__cpf_responsavel__icontains=nome)
+        ).select_related('paciente').order_by('-dataConsulta')
     else:
         consultas = NovaConsulta.objects.all().order_by('-dataConsulta')
 
@@ -362,9 +365,11 @@ def listar_pacientes(request):
     # Obtém o parâmetro de busca
     nome = request.GET.get('nome', '')
 
-    # Filtra os pacientes pelo nome e ordena por nome (alfabético)
     if nome:
-        pacientes_list = Cadastro.objects.filter(nome__icontains=nome).order_by('nome')
+        # Busca por nome do paciente OU CPF exato do responsável
+        pacientes_list = Cadastro.objects.filter(
+            Q(nome__icontains=nome) | Q(cpf_responsavel__icontains=nome)
+        ).order_by('nome')
     else:
         pacientes_list = Cadastro.objects.all().order_by('nome')
 
@@ -379,7 +384,10 @@ def listar_pacientes(request):
 def nova_consulta_listar_pacientes(request):
     nome = request.GET.get('nome', '')
     if nome:
-        pacientes_list = Cadastro.objects.filter(nome__icontains=nome).order_by('nome')
+        # Busca por Nome do Paciente OU CPF do Responsável
+        pacientes_list = Cadastro.objects.filter(
+            Q(nome__icontains=nome) | Q(cpf_responsavel__icontains=nome)
+        ).order_by('nome')
     else:
         pacientes_list = Cadastro.objects.all().order_by('nome')
 
@@ -394,7 +402,10 @@ def nova_consulta_listar_pacientes(request):
 def listar_paciente_grafico(request):
     nome = request.GET.get('nome', '')
     if nome:
-        pacientes_list = Cadastro.objects.filter(nome__icontains=nome).order_by('nome')
+        # Busca por Nome do Paciente OU CPF do Responsável
+        pacientes_list = Cadastro.objects.filter(
+            Q(nome__icontains=nome) | Q(cpf_responsavel__icontains=nome)
+        ).order_by('nome')
     else:
         pacientes_list = Cadastro.objects.all().order_by('nome')
 

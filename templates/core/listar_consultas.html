@@ -36,7 +36,8 @@
                                         <thead>
                                             <tr>
                                                 <th>Nome do Paciente</th>
-                                                <th>Data de Nascimento</th>
+                                                <th>CPF do Responsável</th>
+                                                <th>Data de Nascimento do Paciente</th>
                                                 <th>Data da Consulta</th>
                                                 <th>Ações</th>
                                             </tr>
@@ -44,7 +45,14 @@
                                         <tbody>
                                             {% for consulta in consultas %}
                                             <tr>
-                                                <td>{{ consulta.nome|title }}</td>
+                                                <td>
+                                                    <strong> {{ consulta.nome|title }} </strong>
+                                                    <br>
+                                                    <small class="has-text-grey">
+                                                        Responsável: {{ consulta.paciente.responsavel|title|default:"Não informado" }}
+                                                    </small>
+                                                </td>
+                                                <td>{{ consulta.paciente.cpf_responsavel }}</td>
                                                 <td>{{ consulta.paciente.data_nascimento|date:"d/m/Y" }}</td>
                                                 <td>{{ consulta.dataConsulta }}</td>
                                                 <td>

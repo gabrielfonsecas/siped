@@ -35,7 +35,8 @@
                                     <thead>
                                         <tr>
                                             <th>Nome</th>
-                                            <th>Data de Nascimento</th>
+                                            <th>CPF do Responsável</th>
+                                            <th>Data de Nascimento do Paciente</th>
                                             <th>Sexo</th>
                                             <th>Ações</th>
                                         </tr>
@@ -43,7 +44,14 @@
                                     <tbody>
                                         {% for paciente in pacientes %}
                                         <tr>
-                                            <td>{{ paciente.nome|title }}</td>
+                                            <td>
+                                                <strong>{{ paciente.nome|title }}</strong>
+                                                <br>
+                                                <small class="has-text-grey">
+                                                    Responsável: {{ paciente.responsavel|title|default:"Não informado" }}
+                                                </small>
+                                            </td>
+                                            <td>{{ paciente.cpf_responsavel }}</td>
                                             <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
                                             <td>{{ paciente.sexo|title }}</td>
                                             <td>
