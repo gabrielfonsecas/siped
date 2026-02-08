@@ -210,37 +210,184 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script>
 
+// --- 1. Lógica dos campos de Prematuro (igual ao cadastro) ---
 document.addEventListener('DOMContentLoaded', function() {
     const radioPrematuroSim = document.getElementById('prematuroSim');
     const radioPrematuroNao = document.getElementById('prematuroNao');
     const camposPrematuro = document.getElementById('campos-prematuro');
 
     function toggleCamposPrematuro() {
-        camposPrematuro.style.display = radioPrematuroSim.checked ? 'block' : 'none';
+        if(camposPrematuro && radioPrematuroSim){
+            camposPrematuro.style.display = radioPrematuroSim.checked ? 'block' : 'none';
+        }
         
-        // Opcional: Limpar campos quando ocultar
-        if (!radioPrematuroSim.checked) {
-            document.querySelector('input[name="semanasCorrigidas"]').value = '';
-            document.querySelector('input[name="diasCorrigidos"]').value = '';
+        // Limpar campos quando ocultar (Opcional, mas recomendado na edição se mudar para não)
+        if (radioPrematuroSim && !radioPrematuroSim.checked) {
+            const sem = document.querySelector('input[name="semanasCorrigidas"]');
+            const dias = document.querySelector('input[name="diasCorrigidos"]');
+            if(sem) sem.value = '';
+            if(dias) dias.value = '';
         }
     }
 
-    // Adiciona listeners a ambos os radios
     if (radioPrematuroSim && radioPrematuroNao && camposPrematuro) {
         radioPrematuroSim.addEventListener('change', toggleCamposPrematuro);
         radioPrematuroNao.addEventListener('change', toggleCamposPrematuro);
-        
-        // Inicializa o estado
-        toggleCamposPrematuro();
+        toggleCamposPrematuro(); // Inicializa estado ao carregar
     }
 });
 
+// --- 2. Funções de Validação de CPF ---
+
+// Remove pontuação para limpar o valor
+function limparFormatacao(valor) {
+    return valor.replace(/\D/g, '');
+}
+
+// Formata para enviar ao alerta (se necessário)
+function formatarCPF(cpf) {
+    cpf = limparFormatacao(cpf);
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+
+// Algoritmo matemático de validação
+function validarCPF(cpf) {
+    cpf = limparFormatacao(cpf);
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
+        return false;
+    }
+    let soma = 0;
+    let resto;
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) {
+        resto = 0;
+    }
+    if (resto !== parseInt(cpf.substring(9, 10))) {
+        return false;
+    }
+    soma = 0;
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) {
+        resto = 0;
+    }
+    return resto === parseInt(cpf.substring(10, 11));
+}
+
+// Verificação assíncrona (AJAX) - Igual ao cadastro
+async function validarCPFUnico(cpf) {
+    try {
+        const response = await fetch(`/verificar_cpf/?cpf=${cpf}`);
+        const data = await response.json();
+        // Retorna true se NÃO existe (único), false se já existe
+        return !data.cpf_existe; 
+    } catch (e) {
+        console.error("Erro ao verificar CPF único", e);
+        return true; // Na dúvida, deixa passar ou trata o erro
+    }
+}
+
+// --- 3. Inicialização e Controle do Formulário ---
+
+function inicializarValidacaoEdicao() {
+    const form = document.getElementById('formEditarPaciente');
+    if (!form) return;
+
+    const nomePacienteInput = document.getElementById('nome');
+    const nomeResponsavelInput = document.getElementById('responsavel');
+    const dataNascimentoInput = document.getElementById('data_nascimento');
+    const cpfInput = document.getElementById('cpf');
+    const cpfResponsavelInput = document.getElementById('cpf_responsavel');
+
+    // Armazena valores originais para permitir salvar se o usuário não alterou o CPF
+    const cpfOriginalPaciente = limparFormatacao(cpfInput.value);
+    
+    // Bloquear números nos campos de nome
+    function removerNumeros(e) {
+        e.target.value = e.target.value.replace(/[0-9]/g, '');
+    }
+    if (nomePacienteInput) nomePacienteInput.addEventListener('input', removerNumeros);
+    if (nomeResponsavelInput) nomeResponsavelInput.addEventListener('input', removerNumeros);
+
+    // --- LÓGICA DE SUBMISSÃO CORRIGIDA ---
+    form.addEventListener('submit', async function (event) {
+        // 1. BLOQUEIA O ENVIO IMEDIATAMENTE
+        // Isso impede que o formulário seja enviado enquanto o JavaScript "pensa"
+        event.preventDefault(); 
+
+        let temErro = false; // Flag para controlar se houve erro
+
+        // 2. Validação de Data
+        const hoje = new Date();
+        const dataNascimento = new Date(dataNascimentoInput.value);
+        if (dataNascimento > hoje) {
+            alert('A data de nascimento não pode ser superior ao dia de hoje.');
+            dataNascimentoInput.focus();
+            temErro = true;
+        }
+
+        if (temErro) return; // Se já falhou, para aqui.
+
+        // 3. Validação CPF do Paciente
+        let cpfFormatado = '';
+        if (cpfInput.value.trim()) {
+            cpfFormatado = formatarCPF(cpfInput.value);
+            
+            // Validação Matemática
+            if (!validarCPF(cpfFormatado)) {
+                alert('CPF do paciente inválido.');
+                cpfInput.focus();
+                return;
+            }
+
+            // Validação de Unicidade (Só checa se mudou o CPF)
+            const cpfAtualLimpo = limparFormatacao(cpfInput.value);
+            if (cpfAtualLimpo !== cpfOriginalPaciente) {
+                const cpfValido = await validarCPFUnico(cpfFormatado);
+                if (!cpfValido) {
+                    alert('Este CPF de paciente já está cadastrado em outro registro.');
+                    return;
+                }
+            }
+        }
+
+        // 4. Validação CPF Responsável (Obrigatório e Crítico)
+        const cpfResponsavelFormatado = formatarCPF(cpfResponsavelInput.value);
+        
+        // Validação Matemática
+        if (!validarCPF(cpfResponsavelFormatado)) {
+            alert('CPF do responsável inválido.');
+            cpfResponsavelInput.focus();
+            return; // Impede de continuar
+        }
+
+        // 5. Comparação Paciente x Responsável
+        if (cpfFormatado && cpfFormatado === cpfResponsavelFormatado) {
+            alert('O CPF do paciente não pode ser igual ao CPF do responsável.');
+            return;
+        }
+
+        // 6. SE CHEGOU AQUI, TUDO ESTÁ VÁLIDO.
+        // Dispara o envio manual do formulário
+        form.submit();
+    });
+}
+
+// --- 4. Inicializar Máscaras e Scripts ---
 $(document).ready(function() {
     $('#cpf').mask('000.000.000-00', {reverse: true});
     $('#cpf_responsavel').mask('000.000.000-00', {reverse: true});
     $('#rg').mask('00.000.000', {reverse: true});
     $('#rg_responsavel').mask('00.000.000', {reverse: true});
     $('#telefone').mask('(00) 0 0000-0000');
+    
+    // Inicia a validação lógica
+    inicializarValidacaoEdicao();
 });
 </script>
 </body>

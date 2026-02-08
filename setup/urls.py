@@ -52,7 +52,7 @@ urlpatterns = [
     path('consulta/', listar_consultas, name='listar_consultas'),
     path('grafico-crescimento/listar-pacientes/', listar_paciente_grafico, name='listar_paciente_grafico'),
     path('grafico-crescimento/<int:id_paciente>/', grafico_crescimento, name='grafico_crescimento'),
-        
+    
 
 
 
