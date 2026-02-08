@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from core.models import Cadastro
+from core.models import Cadastro, NovaConsulta
 from django.core.paginator import Paginator
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import views as auth_views
@@ -87,10 +87,39 @@ def editarPaciente(request, id_paciente):
     paciente = get_object_or_404(Cadastro, id_paciente=id_paciente)
 
     if request.method == 'POST':
+        # --- PREPARAÇÃO E TRATAMENTO DOS DADOS DO FORMULÁRIO ---
+
+        # 1. Pega o valor de 'prematuro' do formulário ('true' ou 'false')
+        prematuro_form = request.POST.get('prematuro')
+
+        # 2. Inicia as variáveis para semanas e dias como Nulas
+        semanas_para_salvar = None
+        dias_para_salvar = None
+
+        # 3. Verifica o status do prematuro para decidir o que fazer
+        if prematuro_form == 'true':
+            # Se for prematuro, converte o valor para o modelo e processa os campos de idade
+            paciente.prematuro = 'true'
+            semanas_str = request.POST.get('semanasCorrigidas')
+            dias_str = request.POST.get('diasCorrigidos')
+            
+            # Converte string vazia para None, ou string de número para int
+            semanas_para_salvar = int(semanas_str) if semanas_str else None
+            dias_para_salvar = int(dias_str) if dias_str else None
+        else:
+            # Se NÃO for prematuro, converte o valor e FORÇA os campos a serem nulos
+            paciente.prematuro = 'false'
+            semanas_para_salvar = None
+            dias_para_salvar = None
+
+        # --- FIM DO TRATAMENTO ---
+
+        # 4. Atualiza todos os campos do objeto 'paciente' com os dados tratados
         paciente.nome = request.POST.get('nome')
         data_nascimento = request.POST.get('data_nascimento')
-        if data_nascimento:  # Só atualiza se vier preenchido
+        if data_nascimento:
             paciente.data_nascimento = data_nascimento
+            
         paciente.sexo = request.POST.get('sexo')
         paciente.tipo_sanguineo = request.POST.get('tipo_sanguineo')
         paciente.telefone = request.POST.get('telefone')
@@ -100,9 +129,18 @@ def editarPaciente(request, id_paciente):
         paciente.responsavel = request.POST.get('responsavel')
         paciente.cpf_responsavel = request.POST.get('cpf_responsavel')
         paciente.rg_responsavel = request.POST.get('rg_responsavel')
-        paciente.save()
-        return redirect('paciente', id_paciente=id_paciente)
 
+        # Atualiza com os valores que tratamos na lógica acima
+        paciente.semanasCorrigidas = semanas_para_salvar
+        paciente.diasCorrigidos = dias_para_salvar
+
+        # 5. Salva o objeto atualizado no banco de dados
+        paciente.save()
+        
+        messages.success(request, 'Paciente atualizado com sucesso!')
+        return redirect('listar_pacientes') # Sugestão: redirecionar para a lista
+
+    # Se a requisição for GET, apenas renderiza o formulário com os dados do paciente
     return render(request, 'core/editarPaciente.html', {'paciente': paciente})
 
 @login_required
@@ -127,9 +165,19 @@ def novaConsulta(request, id_paciente=None):
     # Caso com id_paciente: Exibir o formulário de nova consulta
     paciente = get_object_or_404(Cadastro, id_paciente=id_paciente)
 
-    # Busca o histórico de consultas do paciente
-    consultaAnterior = NovaConsulta.objects.filter(nome=paciente.nome).order_by('-dataConsulta').first()
+    # --- LÓGICA CORRIGIDA DO HISTÓRICO GESTACIONAL (GET) ---
+    # 1. Buscamos o OBJETO da primeira consulta que tenha o histórico preenchido
+    historicoExistenteObj = NovaConsulta.objects.filter(
+        paciente=paciente
+    ).exclude(
+        historicoGestacional__exact=''
+    ).first()
+    
+    # 2. A flag para mostrar o campo no template será True apenas se NENHUM histórico for encontrado
+    campoHistorico = not bool(historicoExistenteObj)
+    # --- FIM DA LÓGICA (GET) ---
 
+    consultaAnterior = NovaConsulta.objects.filter(paciente=paciente).order_by('-dataConsulta').first()
 
     if request.method == 'POST':
         # Captura os dados enviados pelo formulário
@@ -137,25 +185,39 @@ def novaConsulta(request, id_paciente=None):
         if not dataConsulta:
             return render(request, 'core/novaConsulta.html', {
                 'paciente': paciente,
-                'consulta_anterior': consultaAnterior,
+                'consultaAnterior': consultaAnterior,
+                'campoHistorico': campoHistorico,
                 'error': 'A data da consulta é obrigatória.'
             })
+        
+        # --- LÓGICA CORRIGIDA PARA SALVAR O HISTÓRICO (POST) ---
+        historicoGestacionalParaSalvar = ''
+        if campoHistorico:
+            # Se o campo estava visível, pegamos o valor do formulário.
+            historicoGestacionalParaSalvar = request.POST.get('historicoGestacional', '')
+        # CORREÇÃO: Usamos o objeto que buscamos antes (historicoExistenteObj)
+        elif historicoExistenteObj:
+            # Se o campo estava oculto, copiamos o valor do histórico já existente.
+            historicoGestacionalParaSalvar = historicoExistenteObj.historicoGestacional
+        # --- FIM DA LÓGICA (POST) ---
 
-        novaConsulta = NovaConsulta(
+        novaConsultaObj = NovaConsulta(
             paciente=paciente, 
             nome=paciente.nome,
             dataConsulta=dataConsulta,
             idade=request.POST.get('idade'), 
-            idadeMeses=request.POST.get('idadeMeses'),
+            idadeMeses=request.POST.get('idadeMeses') or None,
             idadeCorrigida=request.POST.get('idadeCorrigida'),
             doencaPrevia=request.POST.get('doencaPrevia'),
             especificacaoDoencaPrevia=request.POST.get('especificacaoDoencaPrevia') or '',
             medicamentoUso=request.POST.get('medicamentoUso') or '',
             especificacaoMedicamentoUso=request.POST.get('especificacaoMedicamentoUso') or '',
-            historicoGestacional=request.POST.get('historicoGestacional') or '',
+            historicoGestacional=historicoGestacionalParaSalvar,
             anamnese=request.POST.get('anamnese') or '',
             peso=request.POST.get('peso') or '0',
             estatura=request.POST.get('estatura') or '0',
+            avaliacaoEstatura=request.POST.get('avaliacaoEstatura') or '',
+            avaliacaoPeso=request.POST.get('avaliacaoPeso') or '',
             imc=request.POST.get('imc') or '0',
             perimetroCefalico=request.POST.get('perimetroCefalico') or '0',
             testeReflexoVermelho=request.POST.get('testeReflexoVermelho') or '0',
@@ -177,14 +239,16 @@ def novaConsulta(request, id_paciente=None):
             cid=request.POST.get('cid') or '',
             planoConduta=request.POST.get('planoConduta') or '',
         )
-        novaConsulta.save()
+        novaConsultaObj.save()
         messages.success(request, 'Consulta cadastrada com sucesso!')
-        return redirect('nova_consulta_listar_pacientes')  # Redireciona para a lista de consultas ou outra página
+        return redirect('nova_consulta_listar_pacientes')
 
-    return render(request, 'core/novaConsulta.html', {
+    context = {
         'paciente': paciente,
-        'consultaAnterior': consultaAnterior
-    })
+        'consultaAnterior': consultaAnterior,
+        'campoHistorico': campoHistorico,
+    }
+    return render(request, 'core/novaConsulta.html', context)
 
 @login_required
 def consulta_view(request, consulta_id):

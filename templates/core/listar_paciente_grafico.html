@@ -47,7 +47,7 @@
                                             <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
                                             <td>{{ paciente.sexo|title }}</td>
                                             <td>
-                                                <a href="{% url 'grafico_crescimento' paciente.id_paciente %}" class="button is-small is-info">Ver Gráfico</a>    
+                                                <a href="{% url 'grafico_crescimento' paciente.id_paciente %}" class="button is-small is-info" name="botao_listas">Ver Gráfico</a>    
                                             </td>
                                         </tr>
                                         {% empty %}

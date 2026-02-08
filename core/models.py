@@ -71,13 +71,15 @@ class NovaConsulta(models.Model):
 
     # Dados objetivos
     peso = models.FloatField(blank=True, null=True)
+    avaliacaoPeso = models.TextField(blank=True, null=True)
     estatura = models.FloatField(blank=True, null=True)
+    avaliacaoEstatura = models.TextField(blank=True, null=True)
     imc = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     perimetroCefalico = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True)
     testeReflexoVermelho = models.TextField(blank=True, null=True)
     auscultaCardiaca = models.TextField(blank=True, null=True)
     frequenciaCardiaca = models.IntegerField(blank=True, null=True)
-    pressaoArterial = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    pressaoArterial = models.TextField(blank=True, null=True)
     auscultaPulmonar = models.TextField(blank=True, null=True)
     frequenciaRespiratoria = models.IntegerField(blank=True, null=True)
     temperatura = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
@@ -98,41 +100,5 @@ class NovaConsulta(models.Model):
     def __str__(self):
         return f"Consulta de {self.nome} em {self.dataConsulta}"
     
-    def save(self, *args, **kwargs):
-        if self.especificacaoDoencaPrevia:
-            self.especificacaoDoencaPrevia = self.especificacaoDoencaPrevia.lower()
-        if self.especificacaoMedicamentoUso:
-            self.especificacaoMedicamentoUso = self.especificacaoMedicamentoUso.lower()
-        if self.historicoGestacional:
-            self.historicoGestacional = self.historicoGestacional.lower()
-        if self.anamnese:
-            self.anamnese = self.anamnese.lower()
-        if self.testeReflexoVermelho:
-            self.testeReflexoVermelho = self.testeReflexoVermelho.lower()
-        if self.auscultaCardiaca:
-            self.auscultaCardiaca = self.auscultaCardiaca.lower()
-        if self.auscultaPulmonar:
-            self.auscultaPulmonar = self.auscultaPulmonar.lower()
-        if self.otoscopia:
-            self.otoscopia = self.otoscopia.lower()
-        if self.oroscopia:
-            self.oroscopia = self.oroscopia.lower()
-        if self.exameAbdominal:
-            self.exameAbdominal = self.exameAbdominal.lower()
-        if self.genituPelve:
-            self.genituPelve = self.genituPelve.lower()
-        if self.membrosInferiores:
-            self.membrosInferiores = self.membrosInferiores.lower()
-        if self.pele:
-            self.pele = self.pele.lower()
-        if self.outrosExames:
-            self.outrosExames = self.outrosExames.lower()
-        if self.tanner:
-            self.tanner = self.tanner.lower()
-        if self.avaliacao:
-            self.avaliacao = self.avaliacao.lower()
-        if self.planoConduta:   
-            self.planoConduta = self.planoConduta.lower()
-        super().save(*args, **kwargs)
     
     

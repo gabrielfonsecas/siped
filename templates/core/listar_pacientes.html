@@ -55,7 +55,7 @@
                                                 <td>{{ paciente.nome|title }}</td>
                                                 <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
                                                 <td>
-                                                    <a href="{% url 'paciente' paciente.id_paciente %}" class="button is-small is-info">Visualizar</a>
+                                                    <a href="{% url 'paciente' paciente.id_paciente %}" class="button is-small is-info" name="botao_listas">Visualizar</a>
                                                 </td>
                                             </tr>
                                             {% empty %}

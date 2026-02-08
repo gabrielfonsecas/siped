@@ -71,6 +71,7 @@
                                         <input type="hidden" id="idadeMesesInput" name="idadeMeses">
                                     </div>
 
+                                    {% if paciente.prematuro == 'true' %}
                                     <div class="field is-flex" id="idade-corrigida-container" style="display: none;">
                                         <label class="label" style="margin-right: 0.5rem;">Idade Corrigida: </label>
                                         <span id="idadeCorrigida"></span>
@@ -78,6 +79,7 @@
                                         <input type="hidden" id="semanasCorrigidas" value="{{ paciente.semanasCorrigidas }}">
                                         <input type="hidden" id="diasCorrigidos" value="{{ paciente.diasCorrigidos }}">
                                     </div>
+                                    {% endif %}
 
                                     <div class="field is-flex">
                                         <label class="label" style="font-weight: bold;">Comorbidade:</label>
@@ -89,8 +91,14 @@
                                         <span class="resposta-historico">{{ consultaAnterior.especificacaoMedicamentoUso }}</span>
                                     </div>
                                     
+                                    <div class="content has-text-justified">
+                                        <strong>Histórico Gestacional:</strong>
+                                        <span>{{ consultaAnterior.historicoGestacional }}</span>
+                                    </div>
+
                                     <p class="card-header-title is-centered">Histórico do Paciente</p>
                                     <br>
+                                    
 
                                     <!--Inserir histórico do paciente como read-->
                                     {% if consultaAnterior %}
@@ -99,10 +107,6 @@
                                     <div class="field is-flex">
                                         <label class="label" style="font-weight: bold;">Data da Última Consulta:</label>
                                         <span class="resposta-historico">{{ consultaAnterior.dataConsulta }}</span>
-                                    </div>
-                                    <div class="field is-flex">
-                                        <label class="label" style="font-weight: bold;">Histórico Gestacional:</label>
-                                        <span class="resposta-historico">{{ consultaAnterior.historicoGestacional }}</span>
                                     </div>
                                     <div class="field is-flex">
                                         <label class="label" style="font-weight: bold;">Peso (kg):</label>
@@ -116,14 +120,16 @@
                                         <label class="label" style="font-weight: bold;">IMC:</label>
                                         <span class="resposta-historico">{{ consultaAnterior.imc }}</span>
                                     </div>
-                                    <div class="field is-flex">
-                                        <label class="label" style="font-weight: bold;">Avaliação:</label>
-                                        <span class="resposta-historico">{{ consultaAnterior.avaliacao }}</span>
+                                    <div class="content has-text-justified">
+                                        <strong>Avaliação:</strong>
+                                        <span>{{ consultaAnterior.avaliacao }}</span>
                                     </div>
-                                    <div class="field is-flex">
-                                        <label class="label" style="font-weight: bold;">Plano de Conduta: </label>
-                                        <span class="resposta-historico">{{ consultaAnterior.planoConduta }}</span>
+                                    <div class="content has-text-justified">
+                                        <strong>Plano de Conduta: </strong>
+                                        <span>{{ consultaAnterior.planoConduta }}</span>
                                     </div>
+
+                                    
                                     
                                     {% else %}
 
@@ -161,38 +167,46 @@
                                                 <label class="label" for="doencaPrevia">Possui Doença Prévia:</label>
                                                 <div class="control">
                                                     <label class="radio">
-                                                        <input type="radio" name="doencaPrevia" value="sim" id="doencaPreviaSim">
+                                                        <input type="radio" name="doencaPrevia" value="sim" id="doencaPreviaSim" 
+                                                            {% if consultaAnterior.doencaPrevia == 'sim' %}checked{% endif %}>
                                                         Sim
                                                     </label>
                                                     <label class="radio">
-                                                        <input type="radio" name="doencaPrevia" value="nao" id="doencaPreviaNao">
+                                                        <input type="radio" name="doencaPrevia" value="nao" id="doencaPreviaNao" 
+                                                            {% if consultaAnterior.doencaPrevia == 'nao' %}checked{% endif %}>
                                                         Não
                                                     </label>
                                                 </div>
-                                                <div class="field campo-textareao" id="campoDoencaPrevia" style="display: none;">
+                                                
+                                                <div class="field campo-textareao" id="campoDoencaPrevia" style="{% if consultaAnterior.doencaPrevia != 'sim' %}display: none;{% endif %}">
                                                     <div class="control">
-                                                        <input class="input" type="text" name="especificacaoDoencaPrevia" placeholder="Especifique a doença prévia...">
+                                                        <input class="input" type="text" name="especificacaoDoencaPrevia" placeholder="Especifique a doença prévia..." 
+                                                            value="{{ consultaAnterior.especificacaoDoencaPrevia | default:'' }}">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    
+                                        
                                         <div class="column is-two-fifths">
                                             <div class="field">
                                                 <label class="label" for="medicamentoUso">Faz Uso de Medicamentos:</label>
                                                 <div class="control">
                                                     <label class="radio">
-                                                        <input type="radio" name="medicamentoUso" value="sim" id="medicamentoUsoSim">
+                                                        <input type="radio" name="medicamentoUso" value="sim" id="medicamentoUsoSim" 
+                                                            {% if consultaAnterior.medicamentoUso == 'sim' %}checked{% endif %}>
                                                         Sim
                                                     </label>
                                                     <label class="radio">
-                                                        <input type="radio" name="medicamentoUso" value="nao" id="medicamentoUsoNao">
+                                                        <input type="radio" name="medicamentoUso" value="nao" id="medicamentoUsoNao" 
+                                                            {% if consultaAnterior.medicamentoUso == 'nao' %}checked{% endif %}>
                                                         Não
                                                     </label>
                                                 </div>
-                                                <div class="field campo-textareao" id="campoMedicamentoUso" style="display: none;">
+
+                                                <div class="field campo-textareao" id="campoMedicamentoUso" style="{% if consultaAnterior.medicamentoUso != 'sim' %}display: none;{% endif %}">
                                                     <div class="control">
-                                                        <input class="input" type="text" name="especificacaoMedicamentoUso" placeholder="Especifique o medicamento...">
+                                                        <input class="input" type="text" name="especificacaoMedicamentoUso" placeholder="Especifique o medicamento..." 
+                                                            value="{{ consultaAnterior.especificacaoMedicamentoUso | default:'' }}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -205,12 +219,16 @@
                                     </div>
                                     <br>
                                     
-                                    <div class="field">
-                                        <label class="label" for="historicoGestacional" >Histórico Gestacional: </label>
+                                    {% comment %} O campo abaixo só aparece se a flag 'campoHistorico' for verdadeira {% endcomment %}
+                                    {% if campoHistorico %}
+                                        <div class="field">
+                                            <label class="label" for="historicoGestacional">Histórico Gestacional:</label>
                                             <div class="control">
-                                                <textarea class="textarea" id="historicoGestacional" name="historicoGestacional" placeholder="Digite o histórico gestacional do paciente"></textarea>                                            </div>
-                                    </div>
-
+                                                <textarea class="textarea" id="historicoGestacional" name="historicoGestacional" placeholder="Digite o histórico gestacional do paciente"></textarea>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
                                     <div class="field">
                                         <label class="label" for="anamnese">Anamnese: </label>
                                             <div class="control">
@@ -269,7 +287,7 @@
                                             <div class="field">
                                                 <label class="label" for="avaliacaoEstatura">Avaliação Estatura: </label>
                                                     <div class="control">
-                                                        <input class="input" type="text" id="avaliacaoEstatura" name="avaliacaoEstatura" placeholder="Descreva sobre a estatura do paciente" readonly>
+                                                        <input class="input" type="text" id="avaliacaoEstatura" name="avaliacaoEstatura" placeholder="Descreva sobre a estatura do paciente">
                                                     </div>
                                             </div>
                                         </div>
@@ -384,7 +402,7 @@
                                             <div class="field">
                                                 <label class="label" for="pressaoArterial">Pressão Arterial: </label>
                                                     <div class="control">
-                                                        <input class="input" type="number" step="0.1" id="pressaoArterial" name="pressaoArterial" placeholder="Digite a pressão arterial do paciente">
+                                                        <input class="input" type="text" id="pressaoArterial" name="pressaoArterial" placeholder="Digite a pressão arterial do paciente">
                                                     </div>
                                             </div>
                                         </div>
@@ -402,7 +420,7 @@
                                             <div class="field">
                                                 <label class="label" for="frequenciaRespiratoria">Frequência Respiratória: </label>
                                                     <div class="control">
-                                                        <input class="input" type="number" step="0.1" id="frequenciaRespiratoria" name="frequenciaRespiratoria" placeholder="Digite a frequência repisratória paciente">
+                                                        <input class="input" type="number" step="1" id="frequenciaRespiratoria" name="frequenciaRespiratoria" placeholder="Digite a frequência repisratória paciente">
                                                     </div>
                                             </div>
                                         </div>
@@ -411,7 +429,7 @@
                                             <div class="field">
                                                 <label class="label" for="temperatura">Temperatura: </label>
                                                     <div class="control">
-                                                        <input class="input" type="text" id="temperatura" name="temperatura" placeholder="Insira a temperatura do paciente">
+                                                        <input class="input" type="number" step="0.1" id="temperatura" name="temperatura" placeholder="Insira a temperatura do paciente">
                                                     </div> 
                                             </div> 
                                         </div>
@@ -671,8 +689,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const idadeCorrigidaInput = document.getElementById('idadeCorrigida');
     const idadeCorrigidaContainer = document.getElementById('idade-corrigida-container');
 
-    const semanasNascimento = parseInt(document.getElementById('semanasCorrigidas').value);
-    const diasNascimento = parseInt(document.getElementById('diasCorrigidos').value);
+    // --- Elementos de Prematuridade ---
+    const semanasInput = document.getElementById('semanasCorrigidas');
+    const diasInput = document.getElementById('diasCorrigidos');
+
+    let semanasNascimento = null;
+    let diasNascimento = null;
+
+    // CORREÇÃO: Só tenta ler o valor se o elemento existir
+    if (semanasInput) {
+        semanasNascimento = parseInt(semanasInput.value);
+    }
+    if (diasInput) {
+        diasNascimento = parseInt(diasInput.value);
+    }
 
     if (dataNascimento) {
         const hoje = new Date();
@@ -692,7 +722,6 @@ document.addEventListener('DOMContentLoaded', function () {
             dias += ultimoDiaMesAnterior;
             meses--;
         }
-
         const idadeCompleta = `${anos} anos ${meses} meses ${dias} dias`;
         idadeSpan.textContent = idadeCompleta;
         idadeInput.value = idadeCompleta;

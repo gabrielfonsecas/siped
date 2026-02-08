@@ -48,7 +48,7 @@
                                                 <td>{{ consulta.paciente.data_nascimento|date:"d/m/Y" }}</td>
                                                 <td>{{ consulta.dataConsulta }}</td>
                                                 <td>
-                                                    <a href="{% url 'consulta' consulta.id %}" class="button is-small is-info">Visualizar</a>
+                                                    <a href="{% url 'consulta' consulta.id %}" class="button is-small is-info" name="botao_listas">Visualizar</a>
                                                 </td>
                                             </tr>
                                             {% empty %}

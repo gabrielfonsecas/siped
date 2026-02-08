@@ -40,6 +40,42 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="columns">
+                            <div class="column is-one-third">
+                                <div class="field">
+                                    <label class="label">É Prematuro:</label>
+                                    <div class="control">
+                                        <label class="radio">
+                                            <input type="radio" name="prematuro" value="true" id="prematuroSim" 
+                                                  {% if paciente.prematuro == 'true' %}checked{% endif %}>
+                                            Sim
+                                        </label>
+                                        <label class="radio">
+                                            <input type="radio" name="prematuro" value="false" id="prematuroNao" 
+                                                  {% if paciente.prematuro == 'false' %}checked{% endif %}>
+                                            Não
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="columns" id="campos-prematuro" >
+                            <div class="column is-one-third">
+                                <div class="field is-flex">
+                                    <label class="label mr-2">Nasceu com quantas semanas:</label>
+                                    <input class="input" type="number" name="semanasCorrigidas" style="width: 60px; height: 25px;" min="22" max="40" value="{{ paciente.semanasCorrigidas|default_if_none:'' }}">
+                                </div>
+                            </div>
+
+                            <div class="column is-one-third" style="margin-top: -1rem;">
+                                <div class="field is-flex">
+                                    <label class="label mr-2">Nasceu com quantos dias:</label>
+                                    <input class="input" type="number" name="diasCorrigidos" style="width: 60px; height: 25px;" min="0" max="6" value="{{ paciente.diasCorrigidos|default_if_none:'' }}">
+                                </div>
+                            </div>
+                        </div>
                           
                         <div class="columns">
                             <div class="column is-one-third">
@@ -173,6 +209,32 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const radioPrematuroSim = document.getElementById('prematuroSim');
+    const radioPrematuroNao = document.getElementById('prematuroNao');
+    const camposPrematuro = document.getElementById('campos-prematuro');
+
+    function toggleCamposPrematuro() {
+        camposPrematuro.style.display = radioPrematuroSim.checked ? 'block' : 'none';
+        
+        // Opcional: Limpar campos quando ocultar
+        if (!radioPrematuroSim.checked) {
+            document.querySelector('input[name="semanasCorrigidas"]').value = '';
+            document.querySelector('input[name="diasCorrigidos"]').value = '';
+        }
+    }
+
+    // Adiciona listeners a ambos os radios
+    if (radioPrematuroSim && radioPrematuroNao && camposPrematuro) {
+        radioPrematuroSim.addEventListener('change', toggleCamposPrematuro);
+        radioPrematuroNao.addEventListener('change', toggleCamposPrematuro);
+        
+        // Inicializa o estado
+        toggleCamposPrematuro();
+    }
+});
+
 $(document).ready(function() {
     $('#cpf').mask('000.000.000-00', {reverse: true});
     $('#cpf_responsavel').mask('000.000.000-00', {reverse: true});

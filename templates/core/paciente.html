@@ -62,9 +62,25 @@
                                     </div>
 
                                     <div class="field is-flex">
-                                        <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Idade:</label>
-                                        <span id="idade" style="font-weight: normal;"></span>
+                                        <label class="label mr-2">Idade:</label>
+                                        <span id="idadeDisplay"></span>
                                     </div>
+
+                                    {% if paciente.prematuro == 'true' %}
+                                        <div class="field is-flex">
+                                            <label class="label mr-2" style="font-weight: bold; color: red;">Paciente Prematuro</label>
+                                        </div>
+
+                                        <div class="field is-flex" id="idadeCorrigidaContainer">
+                                            <label class="label mr-2">Idade Corrigida:</label>
+                                            <span id="idadeCorrigidaDisplay"></span>
+                                        </div>
+                                    {% endif %}
+
+                                    <input type="hidden" id="dataNascimento" value="{{ paciente.data_nascimento|date:'Y-m-d' }}">
+                                    <input type="hidden" id="statusPrematuro" value="{{ paciente.prematuro }}">
+                                    <input type="hidden" id="semanasNascimento" value="{{ paciente.semanasCorrigidas }}">
+                                    <input type="hidden" id="diasNascimento" value="{{ paciente.diasCorrigidos }}">
                                     
                                     <div class="field is-flex">
                                         <label class="label" style="margin-right: 0.5rem; font-weight: bold;">Sexo:</label>
@@ -202,6 +218,74 @@
                 idadeSpan.textContent = "Data de nascimento não disponível";
             }
         });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Pega os elementos do HTML onde vamos mostrar os resultados
+        const idadeDisplay = document.getElementById('idadeDisplay');
+        const idadeCorrigidaDisplay = document.getElementById('idadeCorrigidaDisplay');
+
+        // Pega os dados brutos que o Django colocou nos inputs escondidos
+        const dataNascimentoStr = document.getElementById('dataNascimento').value;
+        const statusPrematuro = document.getElementById('statusPrematuro').value;
+
+        // Se não tiver data de nascimento, não faz nada
+        if (!dataNascimentoStr || !idadeDisplay) {
+            return;
+        }
+
+        // --- 1. CÁLCULO DA IDADE CRONOLÓGICA ---
+        const hoje = new Date();
+        const nascimento = new Date(dataNascimentoStr);
+
+        let anos = hoje.getFullYear() - nascimento.getFullYear();
+        let meses = hoje.getMonth() - nascimento.getMonth();
+        let dias = hoje.getDate() - nascimento.getDate();
+
+        // Ajustes para casos onde o aniversário no mês/ano ainda não passou
+        if (meses < 0 || (meses === 0 && dias < 0)) {
+            anos--;
+            meses += 12;
+        }
+        if (dias < 0) {
+            meses--;
+            const ultimoDiaDoMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
+            dias += ultimoDiaDoMesAnterior;
+        }
+
+        // Exibe a idade cronológica na tela
+        idadeDisplay.textContent = ` ${anos} anos, ${meses} meses e ${dias} dias`;
+
+        // --- 2. CÁLCULO DA IDADE CORRIGIDA (se necessário) ---
+        if (statusPrematuro === 'true' && idadeCorrigidaDisplay) {
+            const semanasNascimento = parseInt(document.getElementById('semanasNascimento').value);
+            const diasNascimento = parseInt(document.getElementById('diasNascimento').value) || 0;
+
+            if (!isNaN(semanasNascimento)) {
+                // Calcula quantos dias o bebê nasceu antes do termo (40 semanas)
+                const semanasDePrematuridade = 40 - semanasNascimento;
+                const diasDeAjuste = (semanasDePrematuridade * 7) - diasNascimento;
+
+                // Calcula a idade cronológica total em dias
+                const idadeCronologicaEmDias = Math.floor((hoje - nascimento) / (1000 * 60 * 60 * 24));
+                
+                // Subtrai os dias de prematuridade
+                let idadeCorrigidaEmDias = idadeCronologicaEmDias - diasDeAjuste;
+                if (idadeCorrigidaEmDias < 0) {
+                    idadeCorrigidaEmDias = 0; // Idade corrigida não pode ser negativa
+                }
+
+                // Converte a idade corrigida em dias de volta para anos, meses e dias
+                const anosCorrigidos = Math.floor(idadeCorrigidaEmDias / 365.25);
+                const mesesCorrigidos = Math.floor((idadeCorrigidaEmDias % 365.25) / 30.44);
+                const diasCorrigidos = Math.floor((idadeCorrigidaEmDias % 365.25) % 30.44);
+
+                // Exibe a idade corrigida na tela
+                idadeCorrigidaDisplay.textContent = `${anosCorrigidos} anos, ${mesesCorrigidos} meses e ${diasCorrigidos} dias`;
+            }
+        }
+    });
+
     </script>
 </body>
 </html>
