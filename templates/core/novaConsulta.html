@@ -111,11 +111,20 @@
                                     <!--Inserir histórico do paciente como read-->
                                     {% if consultaAnterior %}
 
+                                    <div class="field is-flex" style="justify-content: space-between; align-items: center;">
+                                        <div class="is-flex" style="align-items: center;">
+                                            <label class="label" style="font-weight: bold; margin-right: 0.5rem; margin-bottom: 0;">Data da Última Consulta:</label>
+                                            <span class="resposta-historico">{{ consultaAnterior.dataConsulta }}</span>
+                                        </div>
 
-                                    <div class="field is-flex">
-                                        <label class="label" style="font-weight: bold;">Data da Última Consulta:</label>
-                                        <span class="resposta-historico">{{ consultaAnterior.dataConsulta }}</span>
+                                        <a href="{% url 'consulta' consultaAnterior.id %}" target="_blank" class="button is-small is-info is-outlined">
+                                            <span class="icon is-small">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </span>
+                                            <span>Ver Consulta Completa</span>
+                                        </a>
                                     </div>
+
                                     <div class="field is-flex">
                                         <label class="label" style="font-weight: bold;">Peso (kg):</label>
                                         <span class="resposta-historico">{{ consultaAnterior.peso }} kg</span>
