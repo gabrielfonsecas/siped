@@ -9,11 +9,6 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.db.models import Q
 
-
-
-# from django.urls import reverse_lazy
-
-
 class index(LoginView):
     template_name = 'index.html'
 
@@ -31,41 +26,87 @@ def menu(request):
 @login_required
 def cadastroPaciente(request):
     if request.method == 'POST':
-        # Cria um novo paciente
+        # Captura os dados para validação e para repopular o form em caso de erro
+        nome = request.POST.get('nome')
+        cpf = request.POST.get('cpf')
+        cpf_responsavel = request.POST.get('cpf_responsavel')
+        # ... captura dos outros campos para o contexto de erro ...
+        dados_preenchidos = {
+            'nome': nome,
+            'data_nascimento': request.POST.get('data_nascimento'),
+            'prematuro': request.POST.get('prematuro'),
+            'semanasCorrigidas': request.POST.get('semanasCorrigidas'),
+            'diasCorrigidos': request.POST.get('diasCorrigidos'),
+            'sexo': request.POST.get('sexo'),
+            'tipo_sanguineo': request.POST.get('tipo_sanguineo'),
+            'telefone': request.POST.get('telefone'),
+            'cpf': cpf,
+            'rg': request.POST.get('rg'),
+            'endereco': request.POST.get('endereco'),
+            'responsavel': request.POST.get('responsavel'),
+            'cpf_responsavel': cpf_responsavel,
+            'rg_responsavel': request.POST.get('rg_responsavel'),
+        }
+
+        # --- VALIDAÇÃO DE DUPLICIDADE E CRUZAMENTO ---
+        
+        # 1. Validações do CPF do PACIENTE
+        if cpf:
+            if Cadastro.objects.filter(cpf=cpf).exists():
+                messages.error(request, 'Erro: Já existe um paciente cadastrado com este CPF.')
+                return render(request, 'core/cadastroPaciente.html', {'values': dados_preenchidos})
+            
+            if Cadastro.objects.filter(cpf_responsavel=cpf).exists():
+                messages.error(request, 'Erro: Este CPF já está cadastrado como Responsável. Não pode ser usado para um Paciente.')
+                return render(request, 'core/cadastroPaciente.html', {'values': dados_preenchidos})
+
+        # 2. Validações do CPF do RESPONSÁVEL
+        if cpf_responsavel:
+            if Cadastro.objects.filter(cpf_responsavel=cpf_responsavel).exists():
+                messages.error(request, 'Erro: Já existe um responsável cadastrado com este CPF.')
+                return render(request, 'core/cadastroPaciente.html', {'values': dados_preenchidos})
+
+            if Cadastro.objects.filter(cpf=cpf_responsavel).exists():
+                messages.error(request, 'Erro: Este CPF já pertence a um Paciente. Não pode ser usado como Responsável.')
+                return render(request, 'core/cadastroPaciente.html', {'values': dados_preenchidos})
+
+        # --- FIM DA VALIDAÇÃO ---
+
+        # Se passou por tudo, cria o objeto
         novo_paciente = Cadastro(
-            nome=request.POST.get('nome'),
-            data_nascimento=request.POST.get('data_nascimento'),
-            prematuro = request.POST.get('prematuro'),
-            semanasCorrigidas = request.POST.get('semanasCorrigidas') or None,
-            diasCorrigidos = request.POST.get('diasCorrigidos') or None,
-            sexo=request.POST.get('sexo'),
-            tipo_sanguineo=request.POST.get('tipo_sanguineo'),
-            telefone=request.POST.get('telefone'),
-            cpf=request.POST.get('cpf'),
-            rg=request.POST.get('rg'),
-            endereco=request.POST.get('endereco'),
-            responsavel=request.POST.get('responsavel'),
-            cpf_responsavel=request.POST.get('cpf_responsavel'),
-            rg_responsavel=request.POST.get('rg_responsavel'),
+            nome=nome,
+            data_nascimento=dados_preenchidos['data_nascimento'],
+            prematuro=dados_preenchidos['prematuro'],
+            semanasCorrigidas=dados_preenchidos['semanasCorrigidas'] or None,
+            diasCorrigidos=dados_preenchidos['diasCorrigidos'] or None,
+            sexo=dados_preenchidos['sexo'],
+            tipo_sanguineo=dados_preenchidos['tipo_sanguineo'],
+            telefone=dados_preenchidos['telefone'],
+            cpf=cpf,
+            rg=dados_preenchidos['rg'],
+            endereco=dados_preenchidos['endereco'],
+            responsavel=dados_preenchidos['responsavel'],
+            cpf_responsavel=cpf_responsavel,
+            rg_responsavel=dados_preenchidos['rg_responsavel'],
         )
         novo_paciente.save()
         messages.success(request, 'Paciente cadastrado com sucesso!')
-        return redirect('listar_pacientes')  # Redireciona para o próprio formulário
+        return redirect('listar_pacientes') 
 
     return render(request, 'core/cadastroPaciente.html')
 
 
 @login_required
 def paciente(request):
-    pacientes = Cadastro.objects.all().order_by('nome')  # Busca todos os pacientes
+    pacientes = Cadastro.objects.all().order_by('nome') 
     paciente_selecionado = None
 
     if request.method == 'POST':
-        paciente_id = request.POST.get('id_paciente')  # Obtém o id_paciente do formulário
+        paciente_id = request.POST.get('id_paciente') 
         if paciente_id:
-            paciente_selecionado = get_object_or_404(Cadastro, id_paciente=paciente_id)  # Use id_paciente
+            paciente_selecionado = get_object_or_404(Cadastro, id_paciente=paciente_id) 
         else:
-            return redirect('paciente')  # Redireciona se nenhum paciente for selecionado
+            return redirect('paciente') 
 
     return render(request, 'core/paciente.html', {
         'pacientes': pacientes,
@@ -73,14 +114,13 @@ def paciente(request):
     })
 
 @login_required
-# Busca o paciente pelo ID ou retorna um erro 404 se não for encontrado
 def paciente_view(request, id_paciente):
     paciente = get_object_or_404(Cadastro, id_paciente=id_paciente)
     return render(request, 'core/paciente.html', {'paciente': paciente})
 
 @login_required
 def apagar_paciente(request, id_paciente):
-    paciente = get_object_or_404(Cadastro, id_paciente=id_paciente)  # Use id_paciente
+    paciente = get_object_or_404(Cadastro, id_paciente=id_paciente) 
     paciente.delete()
     return redirect('paciente')
 
@@ -89,60 +129,80 @@ def editarPaciente(request, id_paciente):
     paciente = get_object_or_404(Cadastro, id_paciente=id_paciente)
 
     if request.method == 'POST':
-        # --- PREPARAÇÃO E TRATAMENTO DOS DADOS DO FORMULÁRIO ---
-
-        # 1. Pega o valor de 'prematuro' do formulário ('true' ou 'false')
-        prematuro_form = request.POST.get('prematuro')
-
-        # 2. Inicia as variáveis para semanas e dias como Nulas
-        semanas_para_salvar = None
-        dias_para_salvar = None
-
-        # 3. Verifica o status do prematuro para decidir o que fazer
-        if prematuro_form == 'true':
-            # Se for prematuro, converte o valor para o modelo e processa os campos de idade
-            paciente.prematuro = 'true'
-            semanas_str = request.POST.get('semanasCorrigidas')
-            dias_str = request.POST.get('diasCorrigidos')
-            
-            # Converte string vazia para None, ou string de número para int
-            semanas_para_salvar = int(semanas_str) if semanas_str else None
-            dias_para_salvar = int(dias_str) if dias_str else None
-        else:
-            # Se NÃO for prematuro, converte o valor e FORÇA os campos a serem nulos
-            paciente.prematuro = 'false'
-            semanas_para_salvar = None
-            dias_para_salvar = None
-
-        # --- FIM DO TRATAMENTO ---
-
-        # 4. Atualiza todos os campos do objeto 'paciente' com os dados tratados
+        
+        # Captura os dados
+        novo_cpf = request.POST.get('cpf')
+        novo_cpf_resp = request.POST.get('cpf_responsavel')
+        
+        # --- INÍCIO DA ATUALIZAÇÃO EM MEMÓRIA ---
+        
         paciente.nome = request.POST.get('nome')
+        
+        # CORREÇÃO: Só atualiza a data se o campo não estiver vazio
         data_nascimento = request.POST.get('data_nascimento')
         if data_nascimento:
             paciente.data_nascimento = data_nascimento
-            
+
+        paciente.prematuro = request.POST.get('prematuro')
+        
+        # Tratamento dos campos numéricos do prematuro
+        semanas_str = request.POST.get('semanasCorrigidas')
+        dias_str = request.POST.get('diasCorrigidos')
+        
+        # Se for string vazia, vira None. Se tiver número, converte para int.
+        paciente.semanasCorrigidas = int(semanas_str) if semanas_str else None
+        paciente.diasCorrigidos = int(dias_str) if dias_str else None
+
         paciente.sexo = request.POST.get('sexo')
         paciente.tipo_sanguineo = request.POST.get('tipo_sanguineo')
         paciente.telefone = request.POST.get('telefone')
-        paciente.cpf = request.POST.get('cpf')
+        paciente.cpf = novo_cpf
         paciente.rg = request.POST.get('rg')
         paciente.endereco = request.POST.get('endereco')
         paciente.responsavel = request.POST.get('responsavel')
-        paciente.cpf_responsavel = request.POST.get('cpf_responsavel')
+        paciente.cpf_responsavel = novo_cpf_resp
         paciente.rg_responsavel = request.POST.get('rg_responsavel')
-
-        # Atualiza com os valores que tratamos na lógica acima
-        paciente.semanasCorrigidas = semanas_para_salvar
-        paciente.diasCorrigidos = dias_para_salvar
-
-        # 5. Salva o objeto atualizado no banco de dados
-        paciente.save()
         
-        messages.success(request, 'Paciente atualizado com sucesso!')
-        return redirect('listar_pacientes') # Sugestão: redirecionar para a lista
+        # --- FIM DA ATUALIZAÇÃO EM MEMÓRIA ---
 
-    # Se a requisição for GET, apenas renderiza o formulário com os dados do paciente
+
+        # --- VALIDAÇÃO DE DUPLICIDADE (Edição) ---
+        erro_encontrado = False
+
+        if novo_cpf:
+            # Verifica se CPF já existe em OUTRO paciente
+            if Cadastro.objects.filter(cpf=novo_cpf).exclude(id_paciente=id_paciente).exists():
+                messages.error(request, 'Erro: Este CPF de paciente já está em uso.')
+                erro_encontrado = True
+            
+            # Verifica se CPF já é Responsável (Cruzamento)
+            elif Cadastro.objects.filter(cpf_responsavel=novo_cpf).exclude(id_paciente=id_paciente).exists():
+                messages.error(request, 'Erro: Este CPF já está cadastrado como Responsável de outra pessoa.')
+                erro_encontrado = True
+
+        if not erro_encontrado and novo_cpf_resp:
+            # Verifica se Responsável já existe em OUTRO paciente
+            if Cadastro.objects.filter(cpf_responsavel=novo_cpf_resp).exclude(id_paciente=id_paciente).exists():
+                messages.error(request, 'Erro: Este CPF de responsável já está vinculado a outro paciente.')
+                erro_encontrado = True
+
+            # Verifica se Responsável é Paciente (Cruzamento)
+            elif Cadastro.objects.filter(cpf=novo_cpf_resp).exclude(id_paciente=id_paciente).exists():
+                messages.error(request, 'Erro: O CPF inserido para o responsável pertence a um Paciente cadastrado.')
+                erro_encontrado = True
+        
+        # Se encontrou erro, renderiza a página de edição novamente
+        # Como atualizamos o objeto 'paciente' acima, os campos virão preenchidos com o que o usuário digitou
+        if erro_encontrado:
+            return render(request, 'core/editarPaciente.html', {'paciente': paciente})
+
+        # --- FIM DA VALIDAÇÃO ---
+
+        # Se não houve erro, salva no banco de dados
+        paciente.save()
+        messages.success(request, 'Paciente atualizado com sucesso!')
+        return redirect('listar_pacientes') 
+
     return render(request, 'core/editarPaciente.html', {'paciente': paciente})
 
 @login_required

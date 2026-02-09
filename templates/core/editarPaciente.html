@@ -28,6 +28,15 @@
   
                 <div class="card-content">
                   <div class="content">
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="notification is-danger">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
                     <form id="formEditarPaciente" action="{% url 'editarPaciente' paciente.id_paciente %}" method="post">
                         {% csrf_token %}
   
@@ -69,7 +78,7 @@
                             </div>
                         </div>
                         
-                        <div class="columns" id="campos-prematuro" >
+                        <div class="columns" id="campos-prematuro">
                             <div class="column is-one-third">
                                 <div class="field is-flex">
                                     <label class="label mr-2">Nasceu com quantas semanas:</label>
@@ -135,9 +144,9 @@
                           
                             <div class="column is-one-third">
                                 <div class="field">
-                                    <label class="label" for="rg">RG do Paciente: <span class="required">*</span></label>
+                                    <label class="label" for="rg">RG do Paciente: </label>
                                     <div class="control">
-                                    <input class="input" type="text" id="rg" name="rg" maxlength="12" value="{{ paciente.rg }}" required>
+                                    <input class="input" type="text" id="rg" name="rg" maxlength="12" value="{{ paciente.rg }}">
                                     </div>
                                 </div>
                             </div>
@@ -165,9 +174,9 @@
                           
                             <div class="column is-one-third">
                               <div class="field">
-                                <label class="label" for="rg_responsavel">RG do Responsável: <span class="required">*</span></label>
+                                <label class="label" for="rg_responsavel">RG do Responsável: </label>
                                 <div class="control">
-                                  <input class="input" type="text" id="rg_responsavel" name="rg_responsavel" maxlength="12" value="{{ paciente.rg_responsavel }}" required>
+                                  <input class="input" type="text" id="rg_responsavel" name="rg_responsavel" maxlength="12" value="{{ paciente.rg_responsavel }}">
                                 </div>
                               </div>
                             </div>
@@ -228,14 +237,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if(camposPrematuro && radioPrematuroSim){
             camposPrematuro.style.display = radioPrematuroSim.checked ? 'block' : 'none';
         }
-        
-        // Limpar campos quando ocultar (Opcional, mas recomendado na edição se mudar para não)
-        if (radioPrematuroSim && !radioPrematuroSim.checked) {
-            const sem = document.querySelector('input[name="semanasCorrigidas"]');
-            const dias = document.querySelector('input[name="diasCorrigidos"]');
-            if(sem) sem.value = '';
-            if(dias) dias.value = '';
-        }
     }
 
     if (radioPrematuroSim && radioPrematuroNao && camposPrematuro) {
@@ -287,7 +288,7 @@ function validarCPF(cpf) {
     return resto === parseInt(cpf.substring(10, 11));
 }
 
-// Verificação assíncrona (AJAX) - Igual ao cadastro
+// Verificação assíncrona (AJAX) - Mantida para UX rápida
 async function validarCPFUnico(cpf) {
     try {
         const response = await fetch(`/verificar_cpf/?cpf=${cpf}`);
@@ -296,7 +297,7 @@ async function validarCPFUnico(cpf) {
         return !data.cpf_existe; 
     } catch (e) {
         console.error("Erro ao verificar CPF único", e);
-        return true; // Na dúvida, deixa passar ou trata o erro
+        return true; 
     }
 }
 
@@ -325,10 +326,9 @@ function inicializarValidacaoEdicao() {
     // --- LÓGICA DE SUBMISSÃO CORRIGIDA ---
     form.addEventListener('submit', async function (event) {
         // 1. BLOQUEIA O ENVIO IMEDIATAMENTE
-        // Isso impede que o formulário seja enviado enquanto o JavaScript "pensa"
         event.preventDefault(); 
 
-        let temErro = false; // Flag para controlar se houve erro
+        let temErro = false; 
 
         // 2. Validação de Data
         const hoje = new Date();
@@ -339,7 +339,7 @@ function inicializarValidacaoEdicao() {
             temErro = true;
         }
 
-        if (temErro) return; // Se já falhou, para aqui.
+        if (temErro) return;
 
         // 3. Validação CPF do Paciente
         let cpfFormatado = '';
@@ -352,16 +352,6 @@ function inicializarValidacaoEdicao() {
                 cpfInput.focus();
                 return;
             }
-
-            // Validação de Unicidade (Só checa se mudou o CPF)
-            const cpfAtualLimpo = limparFormatacao(cpfInput.value);
-            if (cpfAtualLimpo !== cpfOriginalPaciente) {
-                const cpfValido = await validarCPFUnico(cpfFormatado);
-                if (!cpfValido) {
-                    alert('Este CPF de paciente já está cadastrado em outro registro.');
-                    return;
-                }
-            }
         }
 
         // 4. Validação CPF Responsável (Obrigatório e Crítico)
@@ -371,7 +361,7 @@ function inicializarValidacaoEdicao() {
         if (!validarCPF(cpfResponsavelFormatado)) {
             alert('CPF do responsável inválido.');
             cpfResponsavelInput.focus();
-            return; // Impede de continuar
+            return;
         }
 
         // 5. Comparação Paciente x Responsável
@@ -381,7 +371,6 @@ function inicializarValidacaoEdicao() {
         }
 
         // 6. SE CHEGOU AQUI, TUDO ESTÁ VÁLIDO.
-        // Dispara o envio manual do formulário
         form.submit();
     });
 }
