@@ -263,18 +263,26 @@ def consulta_view(request, consulta_id):
 
 @login_required
 def listar_consultas(request):
-    # Obtém o parâmetro de busca
-    nome = request.GET.get('nome', '')
+    texto_busca = request.GET.get('nome', '').strip()
 
-    if nome:
-        # Filtra pelo nome do paciente ou pelo CPF do responsável vinculado
+    if texto_busca:
+        palavras = texto_busca.split()
+
+        # Query para o NOME do paciente (dentro da consulta)
+        query_nome = Q()
+        for palavra in palavras:
+            query_nome &= Q(paciente__nome__icontains=palavra)
+        
+        # Query para o CPF do responsável
+        query_cpf = Q(paciente__cpf_responsavel__icontains=texto_busca)
+
         consultas = NovaConsulta.objects.filter(
-            Q(paciente__nome__icontains=nome) | Q(paciente__cpf_responsavel__icontains=nome)
+            query_nome | query_cpf
         ).select_related('paciente').order_by('-dataConsulta')
     else:
         consultas = NovaConsulta.objects.all().order_by('-dataConsulta')
 
-    paginator = Paginator(consultas, 10)  # 10 pacientes por página
+    paginator = Paginator(consultas, 10)
     page_number = request.GET.get('page')
     consultas = paginator.get_page(page_number)   
     return render(request, 'core/listar_consultas.html', {'consultas': consultas})
@@ -363,18 +371,29 @@ def paciente_view(request, id_paciente):
 
 @login_required
 def listar_pacientes(request):
-    # Obtém o parâmetro de busca
-    nome = request.GET.get('nome', '')
+    # Obtém o parâmetro de busca e remove espaços extras
+    texto_busca = request.GET.get('nome', '').strip()
 
-    if nome:
-        # Busca por nome do paciente OU CPF exato do responsável
+    if texto_busca:
+        # Separa o texto em palavras (ex: "João Moraes" vira ["João", "Moraes"])
+        palavras = texto_busca.split()
+
+        # Monta a query para o NOME: O nome deve conter TODAS as palavras digitadas
+        query_nome = Q()
+        for palavra in palavras:
+            query_nome &= Q(nome__icontains=palavra)
+
+        # Monta a query para o CPF (busca simples pelo termo digitado)
+        query_cpf = Q(cpf_responsavel__icontains=texto_busca)
+
+        # Filtra: (Contém todas as palavras no nome) OU (Contém o termo no CPF)
         pacientes_list = Cadastro.objects.filter(
-            Q(nome__icontains=nome) | Q(cpf_responsavel__icontains=nome)
+            query_nome | query_cpf
         ).order_by('nome')
     else:
         pacientes_list = Cadastro.objects.all().order_by('nome')
 
-    paginator = Paginator(pacientes_list, 10)  # 10 pacientes por página
+    paginator = Paginator(pacientes_list, 10)
     page_number = request.GET.get('page')
     pacientes = paginator.get_page(page_number)   
 
@@ -383,16 +402,24 @@ def listar_pacientes(request):
 
 @login_required
 def nova_consulta_listar_pacientes(request):
-    nome = request.GET.get('nome', '')
-    if nome:
-        # Busca por Nome do Paciente OU CPF do Responsável
+    texto_busca = request.GET.get('nome', '').strip()
+    
+    if texto_busca:
+        palavras = texto_busca.split()
+
+        query_nome = Q()
+        for palavra in palavras:
+            query_nome &= Q(nome__icontains=palavra)
+
+        query_cpf = Q(cpf_responsavel__icontains=texto_busca)
+
         pacientes_list = Cadastro.objects.filter(
-            Q(nome__icontains=nome) | Q(cpf_responsavel__icontains=nome)
+            query_nome | query_cpf
         ).order_by('nome')
     else:
         pacientes_list = Cadastro.objects.all().order_by('nome')
 
-    paginator = Paginator(pacientes_list, 10)  # 10 pacientes por página
+    paginator = Paginator(pacientes_list, 10)
     page_number = request.GET.get('page')
     pacientes = paginator.get_page(page_number)
 
@@ -401,16 +428,24 @@ def nova_consulta_listar_pacientes(request):
 
 @login_required
 def listar_paciente_grafico(request):
-    nome = request.GET.get('nome', '')
-    if nome:
-        # Busca por Nome do Paciente OU CPF do Responsável
+    texto_busca = request.GET.get('nome', '').strip()
+    
+    if texto_busca:
+        palavras = texto_busca.split()
+
+        query_nome = Q()
+        for palavra in palavras:
+            query_nome &= Q(nome__icontains=palavra)
+
+        query_cpf = Q(cpf_responsavel__icontains=texto_busca)
+
         pacientes_list = Cadastro.objects.filter(
-            Q(nome__icontains=nome) | Q(cpf_responsavel__icontains=nome)
+            query_nome | query_cpf
         ).order_by('nome')
     else:
         pacientes_list = Cadastro.objects.all().order_by('nome')
 
-    paginator = Paginator(pacientes_list, 10)  # 10 pacientes por página
+    paginator = Paginator(pacientes_list, 10)
     page_number = request.GET.get('page')
     pacientes = paginator.get_page(page_number)
 
